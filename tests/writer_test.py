@@ -46,7 +46,7 @@ class writerTests(unittest.TestCase):
             #
             myDataList=[]
             ofh = open("test-output.cif", "w")
-            curContainer=DataContainer("myblock")
+            current_container=DataContainer("myblock")
             aCat=DataCategory("pdbx_seqtool_mapping_ref")
             aCat.append_attribute("ordinal")
             aCat.append_attribute("entity_id")
@@ -59,8 +59,8 @@ class writerTests(unittest.TestCase):
             aCat.append((1,2,3,4,5,6,7))
             aCat.append((1,2,3,4,5,6,7))
             aCat.append((1,2,3,4,5,6,7))
-            curContainer.append(aCat)
-            myDataList.append(curContainer)
+            current_container.append(aCat)
+            myDataList.append(current_container)
             pdbxW=PdbxWriter(ofh)
             pdbxW.write(myDataList)
             ofh.close()
@@ -78,7 +78,7 @@ class writerTests(unittest.TestCase):
             #
             myDataList=[]
             ofh = open("test-output-1.cif", "w")
-            curContainer=DataContainer("myblock")
+            current_container=DataContainer("myblock")
             aCat=DataCategory("pdbx_seqtool_mapping_ref")
             aCat.append_attribute("ordinal")
             aCat.append_attribute("entity_id")
@@ -91,8 +91,8 @@ class writerTests(unittest.TestCase):
             aCat.append((1,2,3,4,5,6,7))
             aCat.append((1,2,3,4,5,6,7))
             aCat.append((1,2,3,4,5,6,7))
-            curContainer.append(aCat)
-            myDataList.append(curContainer)
+            current_container.append(aCat)
+            myDataList.append(current_container)
             pdbxW=PdbxWriter(ofh)
             pdbxW.write(myDataList)
             ofh.close()
@@ -100,10 +100,10 @@ class writerTests(unittest.TestCase):
             # Read and update the data -
             # 
             myDataList=[]
-            ifh = open("test-output-1.cif", "r")
-            pRd=PdbxReader(ifh)
+            input_file = open("test-output-1.cif", "r")
+            pRd=PdbxReader(input_file)
             pRd.read(myDataList)
-            ifh.close()
+            input_file.close()
             #
             myBlock=myDataList[0]
             myBlock.print_it()
@@ -127,10 +127,10 @@ class writerTests(unittest.TestCase):
         self.lfh.write("\nStarting %s %s\n" % (self.__class__.__name__,
                                                sys._getframe().f_code.co_name))
         myDataList=[]
-        ifh = open(self.pathPdbxDataFile, "r")
-        pRd=PdbxReader(ifh)
+        input_file = open(self.pathPdbxDataFile, "r")
+        pRd=PdbxReader(input_file)
         pRd.read(myDataList)
-        ifh.close()            
+        input_file.close()            
 
     def testReadWriteDataFile(self): 
         """Test case -  data file read write test
@@ -138,10 +138,10 @@ class writerTests(unittest.TestCase):
         self.lfh.write("\nStarting %s %s\n" % (self.__class__.__name__,
                                                sys._getframe().f_code.co_name))
         myDataList=[]
-        ifh = open(self.pathPdbxDataFile, "r")            
-        pRd=PdbxReader(ifh)
+        input_file = open(self.pathPdbxDataFile, "r")            
+        pRd=PdbxReader(input_file)
         pRd.read(myDataList)
-        ifh.close()            
+        input_file.close()            
         
         ofh = open(self.pathOutputFile, "w")
         pWr=PdbxWriter(ofh)

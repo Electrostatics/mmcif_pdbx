@@ -33,7 +33,7 @@ class PdbxWriter(object):
     """
     def __init__(self, ofh=sys.stdout):
         self.__ofh = ofh
-        self.__containerList = []
+        self.__container_list = []
         self.__MAXIMUM_LINE_LENGTH = 2048
         self.__SPACING = 2
         self.__INDENT_DEFINITION = 3
@@ -47,9 +47,9 @@ class PdbxWriter(object):
         """
         self.__rowPartition = numRows
 
-    def write(self, containerList):
-        self.__containerList = containerList
-        for container in self.__containerList:
+    def write(self, container_list):
+        self.__container_list = container_list
+        for container in self.__container_list:
             self.writeContainer(container)
 
     def writeContainer(self, container):

@@ -37,10 +37,10 @@ class readerTests(unittest.TestCase):
         try:
             #
             myDataList=[]
-            ifh = open(self.pathPdbxDataFile, "r")
-            pRd=PdbxReader(ifh)
+            input_file = open(self.pathPdbxDataFile, "r")
+            pRd=PdbxReader(input_file)
             pRd.read(myDataList)
-            ifh.close()            
+            input_file.close()            
         except:
             traceback.print_exc(file=sys.stderr)
             self.fail()
@@ -53,10 +53,10 @@ class readerTests(unittest.TestCase):
         try:
             #
             myDataList=[]
-            ifh = open(self.pathBigPdbxDataFile, "r")
-            pRd=PdbxReader(ifh)
+            input_file = open(self.pathBigPdbxDataFile, "r")
+            pRd=PdbxReader(input_file)
             pRd.read(myDataList)
-            ifh.close()            
+            input_file.close()            
         except:
             traceback.print_exc(file=sys.stderr)
             self.fail()
@@ -69,8 +69,8 @@ class readerTests(unittest.TestCase):
         try:
             #
             myContainerList=[]
-            ifh = open(self.pathSFDataFile, "r")
-            pRd=PdbxReader(ifh)
+            input_file = open(self.pathSFDataFile, "r")
+            pRd=PdbxReader(input_file)
             pRd.read(myContainerList)
             c0=myContainerList[0]
             #
@@ -106,7 +106,7 @@ class readerTests(unittest.TestCase):
                 except:
                     continue
             
-            ifh.close()
+            input_file.close()
             self.lfh.write("f/sig(f) min %f max %f avg %f count %d\n" % (minR, maxR, sumR/icount,icount))
         except:
             traceback.print_exc(file=sys.stderr)
