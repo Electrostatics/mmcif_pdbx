@@ -74,16 +74,16 @@ class readerTests(unittest.TestCase):
             pRd.read(myContainerList)
             c0=myContainerList[0]
             #
-            catObj=c0.getObj("refln")
+            catObj=c0.get_object("refln")
             if catObj is None:
                 return false
         
-            nRows=catObj.getRowCount()
+            nRows=catObj.row_count
             #
             # Get column name index.
             #
             itDict={}
-            itNameList=catObj.getItemNameList()
+            itNameList=catObj.item_name_list
             for idxIt,itName in enumerate(itNameList):
                 itDict[str(itName).lower()]=idxIt
                 #
@@ -93,7 +93,7 @@ class readerTests(unittest.TestCase):
             maxR=-1
             sumR=0
             icount=0
-            for row in  catObj.getRowList():
+            for row in  catObj.row_list:
                 try:
                     f=float(row[idf])
                     sigf=float(row[idsigf])

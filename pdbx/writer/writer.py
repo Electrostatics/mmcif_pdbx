@@ -43,8 +43,8 @@ class PdbxWriter(object):
         self.__rowPartition = None
 
     def setRowPartition(self, numRows):
-        ''' Maximum number of rows checked for value length and format
-        '''
+        """Maximum number of rows checked for value length and format
+        """
         self.__rowPartition = numRows
 
     def write(self, containerList):
@@ -55,22 +55,22 @@ class PdbxWriter(object):
     def writeContainer(self, container):
         indS = " " * self.__INDENT_DEFINITION
         if isinstance(container, DefinitionContainer):
-            self.__write("save_%s\n" % container.getName())
+            self.__write("save_%s\n" % container.name)
             self.__doDefinitionIndent = True
             self.__write(indS + "#\n")
         elif isinstance(container, DataContainer):
-            if (container.getGlobal()):
+            if (container.get_global()):
                 self.__write("global_\n")
                 self.__doDefinitionIndent = False
                 self.__write("\n")
             else:
-                self.__write("data_%s\n" % container.getName())
+                self.__write("data_%s\n" % container.name)
                 self.__doDefinitionIndent = False
                 self.__write("#\n")
 
-        for nm in container.getObjNameList():
-            obj = container.getObj(nm)
-            objL = obj.getRowList()
+        for nm in container.get_object_name_list():
+            obj = container.get_object(nm)
+            objL = obj.row_list
 
             # Skip empty objects
             if len(objL) == 0:
@@ -81,7 +81,7 @@ class PdbxWriter(object):
                 self.__writeItemValueFormat(obj)
 
             # Table formatting -
-            elif len(objL) > 1 and len(obj.getAttributeList()) > 0:
+            elif len(objL) > 1 and len(obj.attribute_list) > 0:
                 self.__writeTableFormat(obj)
             else:
                 raise PdbxError()
@@ -102,22 +102,22 @@ class PdbxWriter(object):
     def __writeItemValueFormat(self, myCategory):
 
         # Compute the maximum item name length within this category -
-        attributeNameLengthMax = 0
-        for attributeName in myCategory.getAttributeList():
-            attributeNameLengthMax = max(attributeNameLengthMax, len(attributeName))
-        itemNameLengthMax = self.__SPACING + len(myCategory.getName()) + attributeNameLengthMax + 2
+        attribute_nameLengthMax = 0
+        for attribute_name in myCategory.attribute_list:
+            attribute_nameLengthMax = max(attribute_nameLengthMax, len(attribute_name))
+        itemNameLengthMax = self.__SPACING + len(myCategory.name) + attribute_nameLengthMax + 2
         #
         lineList = []
         lineList.append("#\n")
-        for attributeName, iPos in myCategory.getAttributeListWithOrder():
+        for attribute_name, iPos in myCategory.attribute_list_with_order:
             if self.__doDefinitionIndent:
                 # - add indent --
                 lineList.append(self.__indentSpace)
 
-            itemName = "_%s.%s" % (myCategory.getName(), attributeName)
+            itemName = "_%s.%s" % (myCategory.name, attribute_name)
             lineList.append(itemName.ljust(itemNameLengthMax))
 
-            lineList.append(myCategory.getValueFormatted(attributeName, 0))
+            lineList.append(myCategory.get_value_formatted(attribute_name, 0))
             lineList.append("\n")
 
         self.__write("".join(lineList))
@@ -131,28 +131,28 @@ class PdbxWriter(object):
         if self.__doDefinitionIndent:
             lineList.append(self.__indentSpace)
         lineList.append("loop_")
-        for attributeName in myCategory.getAttributeList():
+        for attribute_name in myCategory.attribute_list:
             lineList.append('\n')
             if self.__doDefinitionIndent:
                 lineList.append(self.__indentSpace)
-            itemName = "_%s.%s" % (myCategory.getName(), attributeName)
+            itemName = "_%s.%s" % (myCategory.name, attribute_name)
             lineList.append(itemName)
         self.__write("".join(lineList))
 
         #
         # Write the data in tabular format -
         #
-        # print myCategory.getName()
-        # print myCategory.getAttributeList()
+        # print myCategory.name
+        # print myCategory.attribute_list
 
         # For speed make the following evaluation on a portion of the table
         if self.__rowPartition is not None:
-            numSteps = max(1, myCategory.getRowCount() / self.__rowPartition)
+            numSteps = max(1, myCategory.row_count / self.__rowPartition)
         else:
             numSteps = 1
 
-        formatTypeList, dataTypeList = myCategory.getFormatTypeList(steps=numSteps)
-        maxLengthList = myCategory.getAttributeValueMaxLengthList(steps=numSteps)
+        formatTypeList, dataTypeList = myCategory.get_format_type_list(steps=numSteps)
+        maxLengthList = myCategory.get_max_attribute_list_length(steps=numSteps)
         spacing = " " * self.__SPACING
         #
 
@@ -160,31 +160,31 @@ class PdbxWriter(object):
         # print dataTypeList
         # print maxLengthList
         #
-        for iRow in range(myCategory.getRowCount()):
+        for iRow in range(myCategory.row_count):
             lineList = []
             lineList.append('\n')
             if self.__doDefinitionIndent:
                 lineList.append(self.__indentSpace + " ")
 
-            for iAt in range(myCategory.getAttributeCount()):
+            for iAt in range(myCategory.attribute_count):
                 formatType = formatTypeList[iAt]
                 maxLength = maxLengthList[iAt]
 
                 if (formatType == 'FT_UNQUOTED_STRING' or formatType == 'FT_NULL_VALUE'):
-                    val = myCategory.getValueFormattedByIndex(iAt, iRow)
+                    val = myCategory.get_value_formatted_by_index(iAt, iRow)
                     lineList.append(val.ljust(maxLength))
 
                 elif formatType == 'FT_NUMBER':
-                    val = myCategory.getValueFormattedByIndex(iAt, iRow)
+                    val = myCategory.get_value_formatted_by_index(iAt, iRow)
                     lineList.append(val.rjust(maxLength))
 
                 elif formatType == 'FT_QUOTED_STRING':
-                    val = myCategory.getValueFormattedByIndex(iAt, iRow)
+                    val = myCategory.get_value_formatted_by_index(iAt, iRow)
 
                     lineList.append(val.ljust(maxLength + 2))
 
                 elif formatType == "FT_MULTI_LINE_STRING":
-                    val = myCategory.getValueFormattedByIndex(iAt, iRow)
+                    val = myCategory.get_value_formatted_by_index(iAt, iRow)
                     lineList.append(val)
 
                 lineList.append(spacing)

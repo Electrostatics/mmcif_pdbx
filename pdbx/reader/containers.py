@@ -27,7 +27,7 @@ which are mapped to definition and data containes respectively.
 
 Data in both PDBx data files and dictionaries are organized in
 data categories. In the PDBx syntax individual items or data
-identified by labels of the form '_categoryName.attributeName'.
+identified by labels of the form '_categoryName.attribute_name'.
 The terms category and attribute in PDBx jargon are analogous
 table and column in relational data model, or class and attribute
 in an object oriented data model.
@@ -37,8 +37,9 @@ data and definition meta data.
 
 """
 import re
-import sys
+from sys import stdout
 import traceback
+
 
 __docformat__ = "restructuredtext en"
 __author__ = "John Westbrook"
@@ -47,14 +48,11 @@ __license__ = "Creative Commons Attribution 3.0 Unported"
 __version__ = "V0.01"
 
 
-class CifName(object):
-    ''' Class of utilities for CIF-style data names -
-    '''
-    def __init__(self):
-        pass
-
+class CifName:
+    """Class of utilities for CIF-style data names."""
     @staticmethod
-    def categoryPart(name):
+    def category_part(name):
+        """Get the category part of the name."""
         tname = ""
         if name.startswith("_"):
             tname = name[1:]
@@ -68,7 +66,8 @@ class CifName(object):
             return tname[:i]
 
     @staticmethod
-    def attributePart(name):
+    def attribute_part(name):
+        """Get the attribute part of the name."""
         i = name.find(".")
         if i == -1:
             return None
@@ -76,739 +75,754 @@ class CifName(object):
             return name[i + 1:]
 
 
-class ContainerBase(object):
-    ''' Container base class for data and definition objects.
-    '''
+class ContainerBase:
+    """Container base class for data and definition objects."""
     def __init__(self, name):
         # The enclosing scope of the data container (e.g. data_/save_)
         self.__name = name
         # List of category names within this container -
-        self.__objNameList = []
+        self.__object_name_list = []
         # dictionary of DataCategory objects keyed by category name.
-        self.__objCatalog = {}
+        self.__object_catalog = {}
         self.__type = None
 
-    def getType(self):
+    def get_type(self):
+        """Get container type."""
         return self.__type
 
-    def setType(self, type):
-        self.__type = type
+    def set_type(self, type_):
+        """Set container type."""
+        self.__type = type_
 
-    def getName(self):
+    @property
+    def name(self):
+        """Get container name."""
         return self.__name
 
-    def setName(self, name):
+    def set_name(self, name):
+        """Set container name."""
         self.__name = name
 
     def exists(self, name):
-        if name in self.__objCatalog:
-            return True
-        else:
-            return False
+        """Determine if object name exists in object catalog."""
+        return (name in self.__object_catalog)
 
-    def getObj(self, name):
-        if name in self.__objCatalog:
-            return self.__objCatalog[name]
+    def get_object(self, name):
+        """Get object from object catalog."""
+        if name in self.__object_catalog:
+            return self.__object_catalog[name]
         else:
             return None
 
-    def getObjNameList(self):
-        return self.__objNameList
+    def get_object_name_list(self):
+        """Get list of object names."""
+        return self.__object_name_list
 
     def append(self, obj):
-        """ Add the input object to the current object catalog. An existing object
-            of the same name will be overwritten.
-        """
-        if obj.getName() is not None:
-            if obj.getName() not in self.__objCatalog:
-                # self.__objNameList is keeping track of object order here --
-                self.__objNameList.append(obj.getName())
-            self.__objCatalog[obj.getName()] = obj
+        """Add the input object to the current object catalog.
+        An existing object of the same name will be overwritten."""
+        if obj.name is not None:
+            if obj.name not in self.__object_catalog:
+                self.__object_name_list.append(obj.name)
+            self.__object_catalog[obj.name] = obj
 
     def replace(self, obj):
-        """ Replace an existing object with the input object
-        """
-        if ((obj.getName() is not None) and (obj.getName() in self.__objCatalog)):
-            self.__objCatalog[obj.getName()] = obj
+        """Replace an existing object with the input object."""
+        if (obj.name is not None) and (
+                obj.name in self.__object_catalog):
+            self.__object_catalog[obj.name] = obj
 
-    def printIt(self, fh=sys.stdout, type="brief"):
-        fh.write("+ %s container: %30s contains %4d categories\n" %
-                 (self.getType(), self.getName(), len(self.__objNameList)))
-        for nm in self.__objNameList:
-            fh.write("--------------------------------------------\n")
-            fh.write("Data category: %s\n" % nm)
-            if type == 'brief':
-                self.__objCatalog[nm].printIt(fh)
+    def print_it(self, file_=stdout, type_="brief"):
+        """Dump information about container to specified file object."""
+        file_.write(
+            "+ %s container: %30s contains %4d categories\n" % (
+                self.get_type(), self.name,
+                len(self.__object_name_list)))
+        for name in self.__object_name_list:
+            file_.write("--------------------------------------------\n")
+            file_.write("Data category: %s\n" % name)
+            if type_ == 'brief':
+                self.__object_catalog[name].print_it(file_)
             else:
-                self.__objCatalog[nm].dumpIt(fh)
+                self.__object_catalog[name].dump_it(file_)
 
-    def rename(self, curName, newName):
-        """ Change the name of an object in place -
-        """
+    def rename(self, current_name, new_name):
+        """Change the name of an object in place."""
         try:
-            i = self.__objNameList.index(curName)
-            self.__objNameList[i] = newName
-            self.__objCatalog[newName] = self.__objCatalog[curName]
-            self.__objCatalog[newName].setName(newName)
+            i = self.__object_name_list.index(current_name)
+            self.__object_name_list[i] = new_name
+            self.__object_catalog[new_name] = self.__object_catalog[
+                current_name]
+            self.__object_catalog[new_name].set_name(new_name)
             return True
-        except:
+        except KeyError:
             return False
 
-    def remove(self, curName):
-        """ Revmove object by name. Return True on success or False otherwise.
-        """
+    def remove(self, current_name):
+        """Revmove object by name.
+        Return True on success or False otherwise."""
         try:
-            if curName in self.__objCatalog:
-                del self.__objCatalog[curName]
-                i = self.__objNameList.index(curName)
-                del self.__objNameList[i]
+            if current_name in self.__object_catalog:
+                del self.__object_catalog[current_name]
+                i = self.__object_name_list.index(current_name)
+                del self.__object_name_list[i]
                 return True
             else:
                 return False
-        except:
+        except KeyError:
             pass
-
         return False
 
 
 class DefinitionContainer(ContainerBase):
+    """Container for definitions."""
+
     def __init__(self, name):
         super(DefinitionContainer, self).__init__(name)
-        self.setType('definition')
+        self.set_type('definition')
 
-    def isCategory(self):
+    def is_category(self):
+        """Determine if container contains category objects."""
         if self.exists('category'):
             return True
         return False
 
-    def isAttribute(self):
+    def is_attribute(self):
+        """Determine if container contains item objects."""
         if self.exists('item'):
             return True
         return False
 
-    def printIt(self, fh=sys.stdout, type="brief"):
+    def print_it(self, fh=stdout, type_="brief"):
+        """Print information about container to file object."""
         fh.write("Definition container: %30s contains %4d categories\n" %
-                 (self.getName(), len(self.getObjNameList())))
-        if self.isCategory():
+                 (self.name, len(self.get_object_name_list())))
+        if self.is_category():
             fh.write("Definition type: category\n")
-        elif self.isAttribute():
+        elif self.is_attribute():
             fh.write("Definition type: item\n")
         else:
             fh.write("Definition type: undefined\n")
 
-        for nm in self.getObjNameList():
+        for name in self.get_object_name_list():
             fh.write("--------------------------------------------\n")
-            fh.write("Definition category: %s\n" % nm)
-            if type == 'brief':
-                self.getObj(nm).printIt(fh)
+            fh.write("Definition category: %s\n" % name)
+            if type_ == 'brief':
+                self.get_object(name).print_it(fh)
             else:
-                self.getObj(nm).dumpId(fh)
+                self.get_object(name).dumpId(fh)
 
 
 class DataContainer(ContainerBase):
-    ''' Container class for DataCategory objects.
-    '''
+    """Container class for DataCategory objects."""
+
     def __init__(self, name):
         super(DataContainer, self).__init__(name)
-        self.setType('data')
-        self.__globalFlag = False
+        self.set_type('data')
+        self.__global_flag = False
+        self.__current_row = None
 
-    def invokeDataBlockMethod(self, type, method, db):
-        self.__currentRow = 1
-        exec(method.getInline())
+    def invoke_data_block_method(self, method):
+        """Invoke a method for the given data block."""
+        self.__current_row = 1
+        # TODO - remove exec() commands!
+        exec(method.get_inline())
 
-    def setGlobal(self):
-        self.__globalFlag = True
+    def set_global(self):
+        """Set global flag to True."""
+        self.__global_flag = True
 
-    def getGlobal(self):
-        return self.__globalFlag
+    def get_global(self):
+        """Return global flag."""
+        return self.__global_flag
 
 
-class DataCategoryBase(object):
-    """ Base object definition for a data category -
-    """
-    def __init__(self, name, attributeNameList=None, rowList=None):
+class DataCategoryBase:
+    """Base object definition for a data category."""
+
+    def __init__(self, name, attribute_name_list=None, row_list=None):
         self._name = name
-        #
-        if rowList is not None:
-            self._rowList = rowList
+        if row_list is not None:
+            self._row_list = row_list
         else:
-            self._rowList = []
+            self._row_list = []
 
-        if attributeNameList is not None:
-            self._attributeNameList = attributeNameList
+        if attribute_name_list is not None:
+            self._attribute_name_list = attribute_name_list
         else:
-            self._attributeNameList = []
-        #
-        # Derived class data -
-        #
+            self._attribute_name_list = []
         self._catalog = {}
-        self._numAttributes = 0
-        #
+        self._num_attributes = 0
         self.__setup()
 
     def __setup(self):
-        self._numAttributes = len(self._attributeNameList)
+        self._num_attributes = len(self._attribute_name_list)
         self._catalog = {}
-        for attributeName in self._attributeNameList:
-            attributeNameLC = attributeName.lower()
-            self._catalog[attributeNameLC] = attributeName
+        for attribute_name in self._attribute_name_list:
+            attribute_name_lower = attribute_name.lower()
+            self._catalog[attribute_name_lower] = attribute_name
 
-    def setRowList(self, rowList):
-        self._rowList = rowList
+    def set_row_list(self, row_list):
+        """Set row list."""
+        self._row_list = row_list
 
-    def setAttributeNameList(self, attributeNameList):
-        self._attributeNameList = attributeNameList
+    def set_attribute_name_list(self, attribute_name_list):
+        """Set attribute name list."""
+        self._attribute_name_list = attribute_name_list
         self.__setup()
 
-    def setName(self, name):
+    def set_name(self, name):
+        """Set name."""
         self._name = name
 
     def get(self):
-        return (self._name, self._attributeNameList, self._rowList)
+        """Set name, attribute name list, and row list."""
+        return (self._name, self._attribute_name_list, self._row_list)
 
 
 class DataCategory(DataCategoryBase):
-    """ Methods for creating, accessing, and formatting PDBx cif data categories.
-    """
-    def __init__(self, name, attributeNameList=None, rowList=None):
-        super(DataCategory, self).__init__(name, attributeNameList, rowList)
-        #
-        self.__lfh = sys.stdout
+    """Methods for creating, accessing, formatting PDBx cif data categories."""
 
-        self.__currentRowIndex = 0
-        self.__currentAttribute = None
-        #
-        self.__avoidEmbeddedQuoting = False
-        #
-        # --------------------------------------------------------------------
-        # any whitespace
-        self.__wsRe = re.compile(r"\s")
-        self.__wsAndQuotesRe = re.compile(r"[\s'\"]")
-        # any newline or carriage control
-        self.__nlRe = re.compile(r"[\n\r]")
-        #
-        # single quote
-        self.__sqRe = re.compile(r"[']")
-        #
-        self.__sqWsRe = re.compile(r"('\s)|(\s')")
-
-        # double quote
-        self.__dqRe = re.compile(r'["]')
-        self.__dqWsRe = re.compile(r'("\s)|(\s")')
-        #
-        self.__intRe = re.compile(r'^[0-9]+$')
-        self.__floatRe = re.compile(
+    def __init__(self, name, attribute_name_list=None, row_list=None):
+        super().__init__(name, attribute_name_list, row_list)
+        self.__lfh = stdout
+        self.__current_row_index = 0
+        self.__current_attribute = None
+        self.__avoid_embedded_quoting = False
+        self.__whitespace_re = re.compile(r"\s")
+        self.__whitespace_quotes_re = re.compile(r"[\s'\"]")
+        self.__newline_re = re.compile(r"[\n\r]")
+        self.__single_quote_re = re.compile(r"[']")
+        self.__whitespace_single_quote_re = re.compile(r"('\s)|(\s')")
+        self.__double_quote_re = re.compile(r'["]')
+        self.__whitespace_double_quote_re = re.compile(r'("\s)|(\s")')
+        self.__integer_re = re.compile(r'^[0-9]+$')
+        self.__float_re = re.compile(
             r'^-?(([0-9]+)[.]?|([0-9]*[.][0-9]+))([(][0-9]+[)])?([eE][+-]?[0-9]+)?$')
-        #
-        self.__dataTypeList = [
-            'DT_NULL_VALUE', 'DT_INTEGER', 'DT_FLOAT', 'DT_UNQUOTED_STRING', 'DT_ITEM_NAME',
-            'DT_DOUBLE_QUOTED_STRING', 'DT_SINGLE_QUOTED_STRING', 'DT_MULTI_LINE_STRING',
+        self.__data_type_list = [
+            'DT_NULL_VALUE', 'DT_INTEGER', 'DT_FLOAT', 'DT_UNQUOTED_STRING',
+            'DT_ITEM_NAME', 'DT_DOUBLE_QUOTED_STRING',
+            'DT_SINGLE_QUOTED_STRING', 'DT_MULTI_LINE_STRING',
         ]
-        self.__formatTypeList = [
+        self.__format_type_list = [
             'FT_NULL_VALUE', 'FT_NUMBER', 'FT_NUMBER', 'FT_UNQUOTED_STRING',
-            'FT_QUOTED_STRING', 'FT_QUOTED_STRING', 'FT_QUOTED_STRING', 'FT_MULTI_LINE_STRING'
+            'FT_QUOTED_STRING', 'FT_QUOTED_STRING', 'FT_QUOTED_STRING',
+            'FT_MULTI_LINE_STRING'
         ]
 
-    def __getitem__(self, x):
-        """ Implements list-type functionality -
-             Implements op[x] for some special cases -
-                x = integer - returns the row in category (normal list behavior)
-                x = string - returns the value of attribute 'x' in first row.
-        """
-        if isinstance(x, int):
-            # return self._rowList.__getitem__(x)
-            return self._rowList[x]
+    def __getitem__(self, item):
+        """Implements list-type functionality.
 
-        elif isinstance(x, str):
+        Implements op[x] for some special cases:
+            item = integer - returns the row in category (normal list behavior)
+            item = string - returns the value of attribute 'x' in first row
+        """
+        if isinstance(item, int):
+            return self._row_list[item]
+
+        elif isinstance(item, str):
             try:
-                # return self._rowList[0][x]
-                ii = self.getAttributeIndex(x)
-                return self._rowList[0][ii]
+                self.get_attribute_index(item)
+                return self._row_list[0][item]
             except (IndexError, KeyError):
                 raise KeyError
-        raise TypeError(x)
+        raise TypeError(item)
 
-    def getCurrentAttribute(self):
-        return self.__currentAttribute
+    @property
+    def current_attribute(self):
+        """Get current attribute."""
+        return self.__current_attribute
 
-    def getRowIndex(self):
-        return self.__currentRowIndex
+    @property
+    def current_row_index(self):
+        """Get current row index."""
+        return self.__current_row_index
 
-    def getRowList(self):
-        return self._rowList
+    @property
+    def row_list(self):
+        """Get list of rows."""
+        return self._row_list
 
-    def getRowCount(self):
-        return (len(self._rowList))
+    @property
+    def row_count(self):
+        """Get number of rows."""
+        return len(self._row_list)
 
-    def getRow(self, index):
+    def get_row(self, index):
+        """Get specified row.
+        Returns empty array if row not found."""
         try:
-            return self._rowList[index]
-        except:
+            return self._row_list[index]
+        except IndexError:
             return []
 
-    def removeRow(self, index):
+    def remove_row(self, index):
+        """Remove specified row."""
         try:
-            if ((index >= 0) and (index < len(self._rowList))):
-                del self._rowList[index]
-                if self.__currentRowIndex >= len(self._rowList):
-                    self.__currentRowIndex = len(self._rowList) - 1
+            if ((index >= 0) and (index < len(self._row_list))):
+                del self._row_list[index]
+                if self.__current_row_index >= len(self._row_list):
+                    self.__current_row_index = len(self._row_list) - 1
                 return True
             else:
                 pass
-        except:
+        except IndexError:
             pass
-
         return False
 
-    def getFullRow(self, index):
-        """ Return a full row based on the length of the the attribute list.
-        """
+    def get_full_row(self, index):
+        """Return a full row based on the length of the the attribute list."""
         try:
-            if (len(self._rowList[index]) < self._numAttributes):
-                for ii in range(self._numAttributes - len(self._rowList[index])):
-                    self._rowList[index].append('?')
-            return self._rowList[index]
-        except:
-            return ['?' for ii in range(self._numAttributes)]
+            if len(self._row_list[index]) < self._num_attributes:
+                self._row_list[index] += ['?'] * (
+                    self._num_attributes - len(self._row_list[index]))
+            return self._row_list[index]
+        except IndexError:
+            return ['?'] * len(self._num_attributes)
 
-    def getName(self):
+    @property
+    def name(self):
+        """Get container name."""
         return self._name
 
-    def getAttributeList(self):
-        return self._attributeNameList
+    @property
+    def attribute_list(self):
+        """Get list of attributes."""
+        return self._attribute_name_list
 
-    def getAttributeCount(self):
-        return len(self._attributeNameList)
+    @property
+    def attribute_count(self):
+        """Get number of attributes."""
+        return len(self._attribute_name_list)
 
-    def getAttributeListWithOrder(self):
-        oL = []
-        for ii, att in enumerate(self._attributeNameList):
-            oL.append((att, ii))
-        return oL
+    @property
+    def attribute_list_with_order(self):
+        """Get list of attributes in order."""
+        ordered_list = []
+        for i, att in enumerate(self._attribute_name_list):
+            ordered_list.append((att, i))
+        return ordered_list
 
-    def getAttributeIndex(self, attributeName):
-        try:
-            return self._attributeNameList.index(attributeName)
-        except:
-            return -1
+    def get_attribute_index(self, attribute_name):
+        """Get index of given attribute.
+        Raises IndexError."""
+        return self._attribute_name_list.index(attribute_name)
 
-    def hasAttribute(self, attributeName):
-        return attributeName in self._attributeNameList
+    def has_attribute(self, attribute_name):
+        """Indicate whether container has attribute."""
+        return attribute_name in self._attribute_name_list
 
-    def getIndex(self, attributeName):
-        try:
-            return self._attributeNameList.index(attributeName)
-        except:
-            return -1
-
-    def getItemNameList(self):
-        itemNameList = []
-        for att in self._attributeNameList:
-            itemNameList.append("_" + self._name + "." + att)
-        return itemNameList
+    @property
+    def item_name_list(self):
+        """List of attribute names as fully qualified item names."""
+        item_name_list_ = []
+        for att in self._attribute_name_list:
+            item_name_list_.append("_" + self._name + "." + att)
+        return item_name_list_
 
     def append(self, row):
-        # self.__lfh.write("PdbxContainer(append) category %s row %r\n" % (self._name, row))
-        self._rowList.append(row)
+        """Add row to container."""
+        self._row_list.append(row)
 
-    def appendAttribute(self, attributeName):
-        attributeNameLC = attributeName.lower()
-        if attributeNameLC in self._catalog:
-            i = self._attributeNameList.index(self._catalog[attributeNameLC])
-            self._attributeNameList[i] = attributeName
-            self._catalog[attributeNameLC] = attributeName
-            # self.__lfh.write("Appending existing attribute %s\n" % attributeName)
+    def append_attribute(self, attribute_name):
+        """Add attribute to container."""
+        attribute_name_lower = attribute_name.lower()
+        if attribute_name_lower in self._catalog:
+            index = self._attribute_name_list.index(
+                self._catalog[attribute_name_lower])
+            self._attribute_name_list[index] = attribute_name
+            self._catalog[attribute_name_lower] = attribute_name
         else:
-            # self.__lfh.write("Appending existing attribute %s\n" % attributeName)
-            self._attributeNameList.append(attributeName)
-            self._catalog[attributeNameLC] = attributeName
-            #
-        self._numAttributes = len(self._attributeNameList)
+            self._attribute_name_list.append(attribute_name)
+            self._catalog[attribute_name_lower] = attribute_name
+        self._num_attributes = len(self._attribute_name_list)
 
-    def appendAttributeExtendRows(self, attributeName):
-        attributeNameLC = attributeName.lower()
-        if attributeNameLC in self._catalog:
-            i = self._attributeNameList.index(self._catalog[attributeNameLC])
-            self._attributeNameList[i] = attributeName
-            self._catalog[attributeNameLC] = attributeName
-            self.__lfh.write("Appending existing attribute %s\n" % attributeName)
+    def append_attribute_extend_rows(self, attribute_name):
+        """Append attribute and extend rows."""
+        attribute_name_lower = attribute_name.lower()
+        if attribute_name_lower in self._catalog:
+            index = self._attribute_name_list.index(
+                self._catalog[attribute_name_lower])
+            self._attribute_name_list[index] = attribute_name
+            self._catalog[attribute_name_lower] = attribute_name
+            self.__lfh.write(
+                "Appending existing attribute %s\n" % attribute_name)
         else:
-            self._attributeNameList.append(attributeName)
-            self._catalog[attributeNameLC] = attributeName
+            self._attribute_name_list.append(attribute_name)
+            self._catalog[attribute_name_lower] = attribute_name
             # add a placeholder to any existing rows for the new attribute.
-            if (len(self._rowList) > 0):
-                for row in self._rowList:
+            if len(self._row_list) > 0:
+                for row in self._row_list:
                     row.append("?")
-            #
-        self._numAttributes = len(self._attributeNameList)
+        self._num_attributes = len(self._attribute_name_list)
 
-    def getValue(self, attributeName=None, rowIndex=None):
-        if attributeName is None:
-            attribute = self.__currentAttribute
+    def get_value(self, attribute_name=None, row_index=None):
+        """Get value for specified attribute and row."""
+        if attribute_name is None:
+            attribute = self.__current_attribute
         else:
-            attribute = attributeName
-        if rowIndex is None:
-            rowI = self.__currentRowIndex
+            attribute = attribute_name
+        if row_index is None:
+            index = self.__current_row_index
         else:
-            rowI = rowIndex
-
-        if isinstance(attribute, str) and isinstance(rowI, int):
-            try:
-                return self._rowList[rowI][self._attributeNameList.index(attribute)]
-            except (IndexError):
-                raise IndexError
+            index = row_index
+        if isinstance(attribute, str) and isinstance(index, int):
+            return self._row_list[index][
+                self._attribute_name_list.index(attribute)]
         raise IndexError(attribute)
 
-    def setValue(self, value, attributeName=None, rowIndex=None):
-        if attributeName is None:
-            attribute = self.__currentAttribute
+    def set_value(self, value, attribute_name=None, row_index=None):
+        """Set value of attribute."""
+        if attribute_name is None:
+            attribute = self.__current_attribute
         else:
-            attribute = attributeName
-
-        if rowIndex is None:
-            rowI = self.__currentRowIndex
+            attribute = attribute_name
+        if row_index is None:
+            index = self.__current_row_index
         else:
-            rowI = rowIndex
-
-        if isinstance(attribute, str) and isinstance(rowI, int):
+            index = row_index
+        if isinstance(attribute, str) and isinstance(index, int):
             try:
-                # if row index is out of range - add the rows -
-                for ii in range(rowI + 1 - len(self._rowList)):
-                    self._rowList.append(self.__emptyRow())
-                # self._rowList[rowI][attribute] = value
-                ll = len(self._rowList[rowI])
-                ind = self._attributeNameList.index(attribute)
-
-                # extend the list if needed -
-                if (ind >= ll):
-                    self._rowList[rowI].extend([None for ii in range(2 * ind - ll)])
-                self._rowList[rowI][ind] = value
-            except (IndexError):
+                # if row index is out of range - add the rows
+                for _ in range(index + 1 - len(self._row_list)):
+                    self._row_list.append(self.__empty_row)
+                row_len = len(self._row_list[index])
+                ind = self._attribute_name_list.index(attribute)
+                # extend the list if needed
+                if ind >= row_len:
+                    self._row_list[index].extend(
+                        [None for _ in range(2 * ind - row_len)])
+                self._row_list[index][ind] = value
+            except IndexError:
                 self.__lfh.write(
                     "DataCategory(setvalue) index error category"
                     " %s attribute %s index %d value %r\n" %
-                    (self._name, attribute, rowI, value))
+                    (self._name, attribute, index, value))
                 traceback.print_exc(file=self.__lfh)
-                # raise IndexError
-            except (ValueError):
+            except ValueError:
                 self.__lfh.write(
                     "DataCategory(setvalue) value error category"
                     " %s attribute %s index %d value %r\n" %
-                    (self._name, attribute, rowI, value))
+                    (self._name, attribute, index, value))
                 traceback.print_exc(file=self.__lfh)
-                # raise ValueError
 
-    def __emptyRow(self):
-        return [None for ii in range(len(self._attributeNameList))]
+    @property
+    def __empty_row(self):
+        """Return an empty row."""
+        return [None for _ in range(len(self._attribute_name_list))]
 
-    def replaceValue(self, oldValue, newValue, attributeName):
-        numReplace = 0
-        if attributeName not in self._attributeNameList:
-            return numReplace
-        ind = self._attributeNameList.index(attributeName)
-        for row in self._rowList:
-            if row[ind] == oldValue:
-                row[ind] = newValue
-                numReplace += 1
-        return numReplace
+    def replace_value(self, old_value, new_value, attribute_name):
+        """Replace the value of the specified attribute."""
+        num_replace = 0
+        if attribute_name not in self._attribute_name_list:
+            return num_replace
+        ind = self._attribute_name_list.index(attribute_name)
+        for row in self._row_list:
+            if row[ind] == old_value:
+                row[ind] = new_value
+                num_replace += 1
+        return num_replace
 
-    def replaceSubstring(self, oldValue, newValue, attributeName):
-        ok = False
-        if attributeName not in self._attributeNameList:
-            return ok
-        ind = self._attributeNameList.index(attributeName)
-        for row in self._rowList:
+    def replace_substring(self, old_value, new_value, attribute_name):
+        """Replace substring of value of given attribute.
+        Return Boolean flag indicating success."""
+        replace_ok = False
+        if attribute_name not in self._attribute_name_list:
+            return replace_ok
+        ind = self._attribute_name_list.index(attribute_name)
+        for row in self._row_list:
             val = row[ind]
-            row[ind] = val.replace(oldValue, newValue)
+            row[ind] = val.replace(old_value, new_value)
             if val != row[ind]:
-                ok = True
-        return ok
+                replace_ok = True
+        return replace_ok
 
-    def invokeAttributeMethod(self, attributeName, type, method, db):
-        self.__currentRowIndex = 0
-        self.__currentAttribute = attributeName
-        self.appendAttribute(attributeName)
-        # currentRowIndex = self.__currentRowIndex # assigned by never used
-        #
-        ind = self._attributeNameList.index(attributeName)
-        if len(self._rowList) == 0:
-            row = [None for ii in range(len(self._attributeNameList) * 2)]
+    def invoke_attribute_method(self, attribute_name, method):
+        """Invoke method of current attribute."""
+        self.__current_row_index = 0
+        self.__current_attribute = attribute_name
+        self.append_attribute(attribute_name)
+        ind = self._attribute_name_list.index(attribute_name)
+        if len(self._row_list) == 0:
+            row = [None] * len(self._attribute_name_list)*2
             row[ind] = None
-            self._rowList.append(row)
-
-        for row in self._rowList:
-            ll = len(row)
-            if (ind >= ll):
-                row.extend([None for ii in range(2 * ind - ll)])
+            self._row_list.append(row)
+        for row in self._row_list:
+            row_len = len(row)
+            if ind >= row_len:
+                row.extend([None] * (2 * ind - row_len))
                 row[ind] = None
-            exec(method.getInline())
-            self.__currentRowIndex += 1
-            # currentRowIndex = self.__currentRowIndex # assigned by never used
+            # TODO - just say "no" to exec()
+            exec(method.get_inline())
+            self.__current_row_index += 1
 
-    def invokeCategoryMethod(self, type, method, db):
-        self.__currentRowIndex = 0
-        exec(method.getInline())
+    def invoke_category_method(self, method):
+        """Invoke method of current category."""
+        self.__current_row_index = 0
+        # TODO - remove exec()
+        exec(method.get_inline())
 
-    def getAttributeLengthMaximumList(self):
-        mList = [0 for i in len(self._attributeNameList)]
-        for row in self._rowList:
-            for indx, val in enumerate(row):
-                mList[indx] = max(mList[indx], len(val))
-        return mList
+    @property
+    def max_attribute_list_length(self):
+        """Get maximum attribute list length."""
+        max_list = [0] * len(self._attribute_name_list)
+        for row in self._row_list:
+            for index, value in enumerate(row):
+                max_list[index] = max(max_list[index], len(value))
+        return max_list
 
-    def renameAttribute(self, curAttributeName, newAttributeName):
-        """ Change the name of an attribute in place -
-        """
+    def rename_attribute(self, current_attribute_name, new_attribute_name):
+        """Change the name of an attribute in place."""
         try:
-            i = self._attributeNameList.index(curAttributeName)
-            self._attributeNameList[i] = newAttributeName
-            del self._catalog[curAttributeName.lower()]
-            self._catalog[newAttributeName.lower()] = newAttributeName
+            i = self._attribute_name_list.index(current_attribute_name)
+            self._attribute_name_list[i] = new_attribute_name
+            del self._catalog[current_attribute_name.lower()]
+            self._catalog[new_attribute_name.lower()] = new_attribute_name
             return True
-        except:
+        except KeyError:
             return False
 
-    def printIt(self, fh=sys.stdout):
-        fh.write("--------------------------------------------\n")
-        fh.write(" Category: %s attribute list length: %d\n" %
-                 (self._name, len(self._attributeNameList)))
-        for at in self._attributeNameList:
-            fh.write(" Category: %s attribute: %s\n" % (self._name, at))
+    def print_it(self, file_=stdout):
+        """Print container information."""
+        file_.write("--------------------------------------------\n")
+        file_.write(
+            " Category: %s attribute list length: %d\n" %
+            (self._name, len(self._attribute_name_list)))
+        for attr in self._attribute_name_list:
+            file_.write(" Category: %s attribute: %s\n" % (self._name, attr))
 
-        fh.write(" Row value list length: %d\n" % len(self._rowList))
-        #
-        for row in self._rowList[:2]:
-            #
-            if len(row) == len(self._attributeNameList):
-                for ii, v in enumerate(row):
-                    fh.write(" %30s: %s ...\n" % (self._attributeNameList[ii], str(v)[:30]))
+        file_.write(" Row value list length: %d\n" % len(self._row_list))
+        for row in self._row_list[:2]:
+            if len(row) == len(self._attribute_name_list):
+                for index, value in enumerate(row):
+                    file_.write(" %30s: %s ...\n" % (
+                        self._attribute_name_list[index], str(value)[:30]))
             else:
-                fh.write("+WARNING - %s data length %d attribute name length %s mismatched\n" %
-                         (self._name, len(row), len(self._attributeNameList)))
+                file_.write(
+                    "+WARNING - %s data length %d attribute name length %s "
+                    "mismatched\n" % (
+                        self._name, len(row),
+                        len(self._attribute_name_list)))
 
-    def dumpIt(self, fh=sys.stdout):
-        fh.write("--------------------------------------------\n")
-        fh.write(" Category: %s attribute list length: %d\n" %
-                 (self._name, len(self._attributeNameList)))
-        for at in self._attributeNameList:
-            fh.write(" Category: %s attribute: %s\n" % (self._name, at))
+    def dump_it(self, file_=stdout):
+        """Dump contents of container."""
+        file_.write("--------------------------------------------\n")
+        file_.write(
+            " Category: %s attribute list length: %d\n" %
+            (self._name, len(self._attribute_name_list)))
+        for attr in self._attribute_name_list:
+            file_.write(" Category: %s attribute: %s\n" % (self._name, attr))
 
-        fh.write(" Value list length: %d\n" % len(self._rowList))
-        for row in self._rowList:
-            for ii, v in enumerate(row):
-                fh.write(" %30s: %s\n" % (self._attributeNameList[ii], v))
+        file_.write(" Value list length: %d\n" % len(self._row_list))
+        for row in self._row_list:
+            for index, value in enumerate(row):
+                file_.write(" %30s: %s\n" % (
+                    self._attribute_name_list[index], value))
 
-    def __formatPdbx(self, inp):
-        """ Format input data following PDBx quoting rules -
-        """
+    def __format_pdbx(self, inp):
+        """Format input data following PDBx quoting rules."""
         try:
-            if (inp is None):
+            if inp is None:
                 return ("?", 'DT_NULL_VALUE')
-
             # pure numerical values are returned as unquoted strings
-            if (isinstance(inp, int) or self.__intRe.search(str(inp))):
+            if (isinstance(inp, int) or self.__integer_re.search(str(inp))):
                 return ([str(inp)], 'DT_INTEGER')
-
-            if (isinstance(inp, float) or self.__floatRe.search(str(inp))):
+            if (isinstance(inp, float) or self.__float_re.search(str(inp))):
                 return ([str(inp)], 'DT_FLOAT')
-
-            # null value handling -
-
-            if (inp == "." or inp == "?"):
+            # null value handling
+            if inp in (".", "?"):
                 return ([inp], 'DT_NULL_VALUE')
-
-            if (inp == ""):
+            if inp == "":
                 return (["."], 'DT_NULL_VALUE')
-
             # Contains white space or quotes ?
-            if not self.__wsAndQuotesRe.search(inp):
+            if not self.__whitespace_quotes_re.search(inp):
                 if inp.startswith("_"):
-                    return (self.__doubleQuotedList(inp), 'DT_ITEM_NAME')
+                    return (self.__double_quoted_list(inp), 'DT_ITEM_NAME')
                 else:
                     return ([str(inp)], 'DT_UNQUOTED_STRING')
             else:
-                if self.__nlRe.search(inp):
-                    return (self.__semiColonQuotedList(inp), 'DT_MULTI_LINE_STRING')
+                if self.__newline_re.search(inp):
+                    return (
+                        self.__semicolon_quoted_list(inp),
+                        'DT_MULTI_LINE_STRING')
                 else:
-                    if (self.__avoidEmbeddedQuoting):
+                    if self.__avoid_embedded_quoting:
                         # change priority to choose double quoting where possible.
-                        if not self.__dqRe.search(inp) and not self.__sqWsRe.search(inp):
-                            return (self.__doubleQuotedList(inp), 'DT_DOUBLE_QUOTED_STRING')
-                        elif not self.__sqRe.search(inp) and not self.__dqWsRe.search(inp):
-                            return (self.__singleQuotedList(inp), 'DT_SINGLE_QUOTED_STRING')
+                        if (
+                                not self.__double_quote_re.search(inp) and not
+                                self.__whitespace_single_quote_re.search(inp)):
+                            return (
+                                self.__double_quoted_list(inp),
+                                'DT_DOUBLE_QUOTED_STRING')
+                        elif (
+                                not self.__single_quote_re.search(inp) and not
+                                self.__whitespace_double_quote_re.search(inp)):
+                            return (
+                                self.__single_quoted_list(inp),
+                                'DT_SINGLE_QUOTED_STRING')
                         else:
-                            return (self.__semiColonQuotedList(inp), 'DT_MULTI_LINE_STRING')
+                            return (
+                                self.__semicolon_quoted_list(inp),
+                                'DT_MULTI_LINE_STRING')
                     else:
                         # change priority to choose double quoting where possible.
-                        if not self.__dqRe.search(inp):
-                            return (self.__doubleQuotedList(inp), 'DT_DOUBLE_QUOTED_STRING')
-                        elif not self.__sqRe.search(inp):
-                            return (self.__singleQuotedList(inp), 'DT_SINGLE_QUOTED_STRING')
+                        if not self.__double_quote_re.search(inp):
+                            return (
+                                self.__double_quoted_list(inp),
+                                'DT_DOUBLE_QUOTED_STRING')
+                        elif not self.__single_quote_re.search(inp):
+                            return (
+                                self.__single_quoted_list(inp),
+                                'DT_SINGLE_QUOTED_STRING')
                         else:
-                            return (self.__semiColonQuotedList(inp), 'DT_MULTI_LINE_STRING')
-        except:
+                            return (
+                                self.__semicolon_quoted_list(inp),
+                                'DT_MULTI_LINE_STRING')
+        except ValueError:
             traceback.print_exc(file=self.__lfh)
 
-    def __dataTypePdbx(self, inp):
-        """ Detect the PDBx data type -
-        """
-        if (inp is None):
-            return ('DT_NULL_VALUE')
-
+    def __data_type_pdbx(self, inp):
+        """Detect the PDBx data type."""
+        if inp is None:
+            return 'DT_NULL_VALUE'
         # pure numerical values are returned as unquoted strings
-        if isinstance(inp, int) or self.__intRe.search(str(inp)):
-            return ('DT_INTEGER')
-
-        if isinstance(inp, float) or self.__floatRe.search(str(inp)):
-            return ('DT_FLOAT')
-
-        # null value handling -
-
-        if (inp == "." or inp == "?"):
-            return ('DT_NULL_VALUE')
-
-        if (inp == ""):
-            return ('DT_NULL_VALUE')
-
+        if isinstance(inp, int) or self.__integer_re.search(str(inp)):
+            return 'DT_INTEGER'
+        if isinstance(inp, float) or self.__float_re.search(str(inp)):
+            return 'DT_FLOAT'
+        # null value handling
+        if inp in (".", "?"):
+            return 'DT_NULL_VALUE'
+        if inp == "":
+            return 'DT_NULL_VALUE'
         # Contains white space or quotes ?
-        if not self.__wsAndQuotesRe.search(inp):
+        if not self.__whitespace_quotes_re.search(inp):
             if inp.startswith("_"):
-                return ('DT_ITEM_NAME')
+                return 'DT_ITEM_NAME'
             else:
-                return ('DT_UNQUOTED_STRING')
+                return 'DT_UNQUOTED_STRING'
         else:
-            if self.__nlRe.search(inp):
-                return ('DT_MULTI_LINE_STRING')
+            if self.__newline_re.search(inp):
+                return 'DT_MULTI_LINE_STRING'
             else:
-                if (self.__avoidEmbeddedQuoting):
-                    if not self.__sqRe.search(inp) and not self.__dqWsRe.search(inp):
-                        return ('DT_DOUBLE_QUOTED_STRING')
-                    elif not self.__dqRe.search(inp) and not self.__sqWsRe.search(inp):
-                        return ('DT_SINGLE_QUOTED_STRING')
+                if self.__avoid_embedded_quoting:
+                    if (
+                            not self.__single_quote_re.search(inp) and not
+                            self.__whitespace_double_quote_re.search(inp)):
+                        return 'DT_DOUBLE_QUOTED_STRING'
+                    elif (
+                            not self.__double_quote_re.search(inp) and not
+                            self.__whitespace_single_quote_re.search(inp)):
+                        return 'DT_SINGLE_QUOTED_STRING'
                     else:
-                        return ('DT_MULTI_LINE_STRING')
+                        return 'DT_MULTI_LINE_STRING'
                 else:
-                    if not self.__sqRe.search(inp):
-                        return ('DT_DOUBLE_QUOTED_STRING')
-                    elif not self.__dqRe.search(inp):
-                        return ('DT_SINGLE_QUOTED_STRING')
+                    if not self.__single_quote_re.search(inp):
+                        return 'DT_DOUBLE_QUOTED_STRING'
+                    elif not self.__double_quote_re.search(inp):
+                        return 'DT_SINGLE_QUOTED_STRING'
                     else:
-                        return ('DT_MULTI_LINE_STRING')
+                        return 'DT_MULTI_LINE_STRING'
 
-    def __singleQuotedList(self, inp):
-        l = []
-        l.append("'")
-        l.append(inp)
-        l.append("'")
-        return(l)
+    @staticmethod
+    def __single_quoted_list(inp):
+        """Generate a single-quoted list from the input."""
+        return ["'"] + [inp] + ["'"]
 
-    def __doubleQuotedList(self, inp):
-        l = []
-        l.append('"')
-        l.append(inp)
-        l.append('"')
-        return(l)
+    @staticmethod
+    def __double_quoted_list(inp):
+        """Generate a double-quoted list from the input."""
+        return ['"'] + [inp] + ['"']
 
-    def __semiColonQuotedList(self, inp):
-        l = []
-        l.append("\n")
+    @staticmethod
+    def __semicolon_quoted_list(inp):
+        """Generate a semicolon-delimited quoted list from the input."""
         if inp[-1] == '\n':
-            l.append(";")
-            l.append(inp)
-            l.append(";")
-            l.append("\n")
+            return ["\n", ";"] + [inp] + [";", "\n"]
         else:
-            l.append(";")
-            l.append(inp)
-            l.append("\n")
-            l.append(";")
-            l.append("\n")
-        return(l)
+            return ["\n", ";"] + [inp] + ["\n", ";", "\n"]
 
-    def getValueFormatted(self, attributeName=None, rowIndex=None):
-        if attributeName is None:
-            attribute = self.__currentAttribute
+    def get_value_formatted(self, attribute_name=None, row_index=None):
+        """Get formatted version of value."""
+        if attribute_name is None:
+            attribute = self.__current_attribute
         else:
-            attribute = attributeName
-
-        if rowIndex is None:
-            rowI = self.__currentRowIndex
+            attribute = attribute_name
+        if row_index is None:
+            index = self.__current_row_index
         else:
-            rowI = rowIndex
-
-        if isinstance(attribute, str) and isinstance(rowI, int):
+            index = row_index
+        if isinstance(attribute, str) and isinstance(index, int):
             try:
-                list, type = self.__formatPdbx(
-                    self._rowList[rowI][self._attributeNameList.index(attribute)])
-                return "".join(list)
-            except (IndexError):
+                list_, _ = self.__format_pdbx(
+                    self._row_list[index][
+                        self._attribute_name_list.index(attribute)])
+                return "".join(list_)
+            except IndexError:
                 self.__lfh.write(
-                    "attributeName %s rowI %r rowdata %r\n" %
-                    (attributeName, rowI, self._rowList[rowI]))
+                    "attribute_name %s index %r rowdata %r\n" %
+                    (attribute_name, index, self._row_list[index]))
                 raise IndexError
         raise TypeError(attribute)
 
-    def getValueFormattedByIndex(self, attributeIndex, rowIndex):
+    def get_value_formatted_by_index(self, attribute_index, row_index):
+        """Get value formatted by index."""
+        list_, _ = self.__format_pdbx(
+            self._row_list[row_index][attribute_index])
+        return "".join(list_)
+
+    def get_max_attribute_list_length(self, steps=1):
+        """Get maximum length of attribute value list."""
+        max_list = [0] * len(self._attribute_name_list)
+        for _ in self._row_list[::steps]:
+            for index, value in enumerate(self._attribute_name_list):
+                max_list[index] = max(max_list[index], len(str(value)))
+        return max_list
+
+    def get_format_type_list(self, steps=1):
+        """Get a formatted type list."""
         try:
-            list, type = self.__formatPdbx(self._rowList[rowIndex][attributeIndex])
-            return "".join(list)
-        except (IndexError):
-            raise IndexError
-
-    def getAttributeValueMaxLengthList(self, steps=1):
-        mList = [0 for i in range(len(self._attributeNameList))]
-        for row in self._rowList[::steps]:
-            for indx in range(len(self._attributeNameList)):
-                val = row[indx]
-                mList[indx] = max(mList[indx], len(str(val)))
-        return mList
-
-    def getFormatTypeList(self, steps=1):
-        try:
-            curDataTypeList = ['DT_NULL_VALUE' for i in range(len(self._attributeNameList))]
-            for row in self._rowList[::steps]:
-                for indx in range(len(self._attributeNameList)):
-                    val = row[indx]
-                    # print "index ", indx, " val ", val
-                    dType = self.__dataTypePdbx(val)
-                    dIndx = self.__dataTypeList.index(dType)
-                    # print "d type", dType, " d type index ", dIndx
-                    cType = curDataTypeList[indx]
-                    cIndx = self.__dataTypeList.index(cType)
-                    cIndx = max(cIndx, dIndx)
-                    curDataTypeList[indx] = self.__dataTypeList[cIndx]
-
+            current_data_type_list = ['DT_NULL_VALUE'] * len(
+                self._attribute_name_list)
+            for row in self._row_list[::steps]:
+                for index, value in enumerate(self._attribute_name_list):
+                    data_type = self.__data_type_pdbx(value)
+                    data_index = self.__data_type_list.index(data_type)
+                    current_type = current_data_type_list[index]
+                    current_index = self.__data_type_list.index(
+                        current_type)
+                    current_index = max(current_index, data_index)
+                    current_data_type_list[index] = self.__data_type_list[
+                        current_index]
             # Map the format types to the data types
-            curFormatTypeList = []
-            for dt in curDataTypeList:
-                ii = self.__dataTypeList.index(dt)
-                curFormatTypeList.append(self.__formatTypeList[ii])
-        except:
+            current_format_type_list = []
+            for data_type in current_data_type_list:
+                index = self.__data_type_list.index(data_type)
+                current_format_type_list.append(self.__format_type_list[index])
+        except IndexError:
             self.__lfh.write(
-                "PdbxDataCategory(getFormatTypeList) ++Index error at index %d in row %r\n" %
-                (indx, row))
+                "PdbxDataCategory(get_format_type_list) ++Index error at "
+                "index %d in row %r\n" %
+                (index, row))
+        return current_format_type_list, current_data_type_list
 
-        return curFormatTypeList, curDataTypeList
-
-    def getFormatTypeListX(self):
-        curDataTypeList = ['DT_NULL_VALUE' for i in range(len(self._attributeNameList))]
-        for row in self._rowList:
-            for indx in range(len(self._attributeNameList)):
-                val = row[indx]
-                # print "index ", indx, " val ", val
-                dType = self.__dataTypePdbx(val)
-                dIndx = self.__dataTypeList.index(dType)
-                # print "d type", dType, " d type index ", dIndx
-
-                cType = curDataTypeList[indx]
-                cIndx = self.__dataTypeList.index(cType)
-                cIndx = max(cIndx, dIndx)
-                curDataTypeList[indx] = self.__dataTypeList[cIndx]
-
+    @property
+    def get_format_type_list_x(self):
+        """Alternate version of format type list."""
+        current_data_type_list = ['DT_NULL_VALUE'] * len(
+            self._attribute_name_list)
+        for _ in self._row_list:
+            for index, value in enumerate(self._attribute_name_list):
+                data_type = self.__data_type_pdbx(value)
+                data_index = self.__data_type_list.index(data_type)
+                current_type = current_data_type_list[index]
+                current_index = self.__data_type_list.index(current_type)
+                current_index = max(current_index, data_index)
+                current_data_type_list[index] = self.__data_type_list[
+                    current_index]
         # Map the format types to the data types
-        curFormatTypeList = []
-        for dt in curDataTypeList:
-            ii = self.__dataTypeList.index(dt)
-            curFormatTypeList.append(self.__formatTypeList[ii])
-        return curFormatTypeList, curDataTypeList
+        current_format_type_list = []
+        for data_type in current_data_type_list:
+            index = self.__data_type_list.index(data_type)
+            current_format_type_list.append(self.__format_type_list[index])
+        return current_format_type_list, current_data_type_list

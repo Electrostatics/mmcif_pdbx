@@ -44,8 +44,8 @@ class PdbxReadWriteTests(unittest.TestCase):
         try:
             #
             fn="test-simple.cif"
-            attributeNameList=['aOne','aTwo','aThree','aFour','aFive','aSix','aSeven','aEight','aNine','aTen']
-            rowList=[[1,2,3,4,5,6,7,8,9,10],
+            attribute_name_list=['aOne','aTwo','aThree','aFour','aFive','aSix','aSeven','aEight','aNine','aTen']
+            row_list=[[1,2,3,4,5,6,7,8,9,10],
                      [1,2,3,4,5,6,7,8,9,10],
                      [1,2,3,4,5,6,7,8,9,10],
                      [1,2,3,4,5,6,7,8,9,10],
@@ -60,10 +60,10 @@ class PdbxReadWriteTests(unittest.TestCase):
             #
             #
             curContainer=DataContainer("myblock")
-            aCat=DataCategory(nameCat,attributeNameList,rowList)
-            aCat.printIt()
+            aCat=DataCategory(nameCat,attribute_name_list,row_list)
+            aCat.print_it()
             curContainer.append(aCat)
-            curContainer.printIt()
+            curContainer.print_it()
             #
             myContainerList=[]
             myContainerList.append(curContainer)
@@ -78,8 +78,8 @@ class PdbxReadWriteTests(unittest.TestCase):
             pRd.read(myContainerList)
             ifh.close()
             for container in myContainerList:
-                for objName in container.getObjNameList():
-                    name,aList,rList=container.getObj(objName).get()
+                for objName in container.get_object_name_list():
+                    name,aList,rList=container.get_object(objName).get()
                     self.lfh.write("Recovered data category  %s\n" % name)
                     self.lfh.write("Attribute list           %r\n" % repr(aList))
                     self.lfh.write("Row list                 %r\n" % repr(rList))                                        
@@ -99,21 +99,21 @@ class PdbxReadWriteTests(unittest.TestCase):
             ofh = open("test-output.cif", "w")
             curContainer=DataContainer("myblock")
             aCat=DataCategory("pdbx_seqtool_mapping_ref")
-            aCat.appendAttribute("ordinal")
-            aCat.appendAttribute("entity_id")
-            aCat.appendAttribute("auth_mon_id")
-            aCat.appendAttribute("auth_mon_num")
-            aCat.appendAttribute("pdb_chain_id")
-            aCat.appendAttribute("ref_mon_id")
-            aCat.appendAttribute("ref_mon_num")                        
+            aCat.append_attribute("ordinal")
+            aCat.append_attribute("entity_id")
+            aCat.append_attribute("auth_mon_id")
+            aCat.append_attribute("auth_mon_num")
+            aCat.append_attribute("pdb_chain_id")
+            aCat.append_attribute("ref_mon_id")
+            aCat.append_attribute("ref_mon_num")                        
             aCat.append([1,2,3,4,5,6,7])
             aCat.append([1,2,3,4,5,6,7])
             aCat.append([1,2,3,4,5,6,7])
             aCat.append([1,2,3,4,5,6,7])
             aCat.append([7,6,5,4,3,2,1])
-            aCat.printIt()            
+            aCat.print_it()            
             curContainer.append(aCat)
-            curContainer.printIt()
+            curContainer.print_it()
             #
             myDataList.append(curContainer)
             pdbxW=PdbxWriter(ofh)
@@ -135,20 +135,20 @@ class PdbxReadWriteTests(unittest.TestCase):
 
             curContainer=DataContainer("myblock")
             aCat=DataCategory("pdbx_seqtool_mapping_ref")
-            aCat.appendAttribute("ordinal")
-            aCat.appendAttribute("entity_id")
-            aCat.appendAttribute("auth_mon_id")
-            aCat.appendAttribute("auth_mon_num")
-            aCat.appendAttribute("pdb_chain_id")
-            aCat.appendAttribute("ref_mon_id")
-            aCat.appendAttribute("ref_mon_num")                        
+            aCat.append_attribute("ordinal")
+            aCat.append_attribute("entity_id")
+            aCat.append_attribute("auth_mon_id")
+            aCat.append_attribute("auth_mon_num")
+            aCat.append_attribute("pdb_chain_id")
+            aCat.append_attribute("ref_mon_id")
+            aCat.append_attribute("ref_mon_num")                        
             aCat.append([9,2,3,4,5,6,7])
             aCat.append([10,2,3,4,5,6,7])
             aCat.append([11,2,3,4,5,6,7])
             aCat.append([12,2,3,4,5,6,7])
             
             #self.lfh.write("Assigned data category state-----------------\n")            
-            #aCat.dumpIt(fh=self.lfh)
+            #aCat.dump_it(fh=self.lfh)
 
             curContainer.append(aCat)
             myDataList.append(curContainer)
@@ -167,12 +167,12 @@ class PdbxReadWriteTests(unittest.TestCase):
             ifh.close()
             #
             myBlock=myDataList[0]
-            myBlock.printIt()
-            myCat=myBlock.getObj('pdbx_seqtool_mapping_ref')
-            myCat.printIt()
-            for iRow in range(0,myCat.getRowCount()):
-                myCat.setValue('some value', 'ref_mon_id',iRow)
-                myCat.setValue(100, 'ref_mon_num',iRow)
+            myBlock.print_it()
+            myCat=myBlock.get_object('pdbx_seqtool_mapping_ref')
+            myCat.print_it()
+            for iRow in range(0,myCat.row_count):
+                myCat.set_value('some value', 'ref_mon_id',iRow)
+                myCat.set_value(100, 'ref_mon_num',iRow)
             ofh = open("test-output-2.cif", "w")            
             pdbxW=PdbxWriter(ofh)
             pdbxW.write(myDataList)

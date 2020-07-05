@@ -178,11 +178,11 @@ class PdbxReader(object):
                         return
 
                 # Check for duplicate attributes and add attribute to table.
-                if curAttName in curCategory.getAttributeList():
+                if curAttName in curCategory.attribute_list:
                     self.__syntaxError("Duplicate attribute encountered in category")
                     return
                 else:
-                    curCategory.appendAttribute(curAttName)
+                    curCategory.append_attribute(curAttName)
 
                 # Get the data for this attribute from the next token
                 tCat, tAtt, curQuotedString, curWord = next(tokenizer)
@@ -238,7 +238,7 @@ class PdbxReader(object):
                     self.__syntaxError("loop_ declaration outside of data_ block or save_ frame")
                     return
 
-                curCategory.appendAttribute(curAttName)
+                curCategory.append_attribute(curAttName)
 
                 # Read the rest of the loop_ declaration
                 while True:
@@ -247,11 +247,11 @@ class PdbxReader(object):
                     if curCatName is None:
                         break
 
-                    if curCatName != curCategory.getName():
+                    if curCatName != curCategory.name:
                         self.__syntaxError("Changed category name in loop_ declaration")
                         return
 
-                    curCategory.appendAttribute(curAttName)
+                    curCategory.append_attribute(curAttName)
 
                 # If the next token is a 'word', check it for any reserved words -
                 if curWord is not None:
@@ -269,7 +269,7 @@ class PdbxReader(object):
                     curRow = []
                     curCategory.append(curRow)
 
-                    for tAtt in curCategory.getAttributeList():
+                    for tAtt in curCategory.attribute_list:
                         if curWord is not None:
                             curRow.append(curWord)
                         elif curQuotedString is not None:
@@ -320,7 +320,7 @@ class PdbxReader(object):
                 return
             elif state == "ST_GLOBAL":
                 curContainer = DataContainer("blank-global")
-                curContainer.setGlobal()
+                curContainer.set_global()
                 containerList.append(curContainer)
                 categoryIndex = {}
                 curCategory = None
