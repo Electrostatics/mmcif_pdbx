@@ -109,9 +109,9 @@ class writerTests(unittest.TestCase):
             myBlock.print_it()
             myCat=myBlock.get_object('pdbx_seqtool_mapping_ref')
             myCat.print_it()
-            for iRow in range(0,myCat.row_count):
-                myCat.set_value('some value', 'ref_mon_id',iRow)
-                myCat.set_value(100, 'ref_mon_num',iRow)
+            for irow in range(0,myCat.row_count):
+                myCat.set_value('some value', 'ref_mon_id',irow)
+                myCat.set_value(100, 'ref_mon_num',irow)
             ofh = open("test-output-2.cif", "w")            
             pdbxW=PdbxWriter(ofh)
             pdbxW.write(myDataList)

@@ -7,187 +7,163 @@
 # 23-Oct-2012 jdw update path details and reorganize.
 #
 ###
-"""
-Classes for writing data and dictionary containers in PDBx/mmCIF format.
-
-"""
-import sys
-from pdbx.reader.containers import DefinitionContainer, DataContainer
+"""Classes for writing data and dictionary containers in PDBx/mmCIF format."""
+from sys import stdout
+from ..reader.containers import DefinitionContainer, DataContainer
 
 __docformat__ = "restructuredtext en"
 __author__ = "John Westbrook"
 __email__ = "jwest@rcsb.rutgers.edu"
-__license__ = "Creative Commons Attribution 3.0 Unported"
-__version__ = "V0.01"
+
+
+MAXIMUM_LINE_LENGTH = 2048
+SPACING = 2
+INDENT_DEFINITION = 3
+DO_DEFINITION_INDENT = False
 
 
 class PdbxError(Exception):
-    """ Class for catch general errors
+    """Class for catch general errors.
+    TODO - consolidate error classes.
     """
-    pass
 
 
-class PdbxWriter(object):
-    """Write PDBx data files or dictionaries using the input container
-       or container list.
+class PdbxWriter:
+    """Write PDBx data files or dictionaries.
+    Use the input container or container list.
     """
-    def __init__(self, ofh=sys.stdout):
-        self.__ofh = ofh
+    def __init__(self, output_file=stdout):
+        self.__output_file = output_file
         self.__container_list = []
-        self.__MAXIMUM_LINE_LENGTH = 2048
-        self.__SPACING = 2
-        self.__INDENT_DEFINITION = 3
-        self.__indentSpace = " " * self.__INDENT_DEFINITION
-        self.__doDefinitionIndent = False
+        self.__maximum_line_length = MAXIMUM_LINE_LENGTH
+        self.__spacing = SPACING
+        self.__indent_definition = INDENT_DEFINITION
+        self.__indent_space = " " * self.__indent_definition
+        self._do_definition_indent = DO_DEFINITION_INDENT
         # Maximum number of rows checked for value length and format
-        self.__rowPartition = None
+        self.__row_partition = None
 
-    def setRowPartition(self, numRows):
-        """Maximum number of rows checked for value length and format
-        """
-        self.__rowPartition = numRows
+    def set_row_partition(self, num_rows):
+        """Maximum number of rows checked for value length and format."""
+        self.__row_partition = num_rows
 
     def write(self, container_list):
+        """Write out a list of containers."""
         self.__container_list = container_list
         for container in self.__container_list:
-            self.writeContainer(container)
+            self.write_container(container)
 
-    def writeContainer(self, container):
-        indS = " " * self.__INDENT_DEFINITION
+    def write_container(self, container):
+        """Write out information for an individual container."""
+        indent_string = " " * self.__indent_definition
         if isinstance(container, DefinitionContainer):
             self.__write("save_%s\n" % container.name)
-            self.__doDefinitionIndent = True
-            self.__write(indS + "#\n")
+            self._do_definition_indent = True
+            self.__write(indent_string + "#\n")
         elif isinstance(container, DataContainer):
-            if (container.get_global()):
+            if container.get_global():
                 self.__write("global_\n")
-                self.__doDefinitionIndent = False
+                self._do_definition_indent = False
                 self.__write("\n")
             else:
                 self.__write("data_%s\n" % container.name)
-                self.__doDefinitionIndent = False
+                self._do_definition_indent = False
                 self.__write("#\n")
-
-        for nm in container.get_object_name_list():
-            obj = container.get_object(nm)
-            objL = obj.row_list
-
+        for name in container.get_object_name_list():
+            obj = container.get_object(name)
+            object_list = obj.row_list
             # Skip empty objects
-            if len(objL) == 0:
+            if len(object_list) == 0:
                 continue
-
             # Item - value formattting
-            elif len(objL) == 1:
-                self.__writeItemValueFormat(obj)
-
-            # Table formatting -
-            elif len(objL) > 1 and len(obj.attribute_list) > 0:
-                self.__writeTableFormat(obj)
+            if len(object_list) == 1:
+                self.__write_item_value_format(obj)
+            # Table formatting
+            elif len(object_list) > 1 and len(obj.attribute_list) > 0:
+                self.__write_table_format(obj)
             else:
-                raise PdbxError()
-
-            if self.__doDefinitionIndent:
-                self.__write(indS + "#")
+                raise PdbxError(
+                    "len(object_list) = %d and len(obj.attribute_list) = %d" %
+                    (len(object_list), len(obj.attribute_list)))
+            if self._do_definition_indent:
+                self.__write(indent_string + "#")
             else:
                 self.__write("#")
-
         # Add a trailing saveframe reserved word
         if isinstance(container, DefinitionContainer):
             self.__write("\nsave_\n")
         self.__write("#\n")
 
-    def __write(self, st):
-        self.__ofh.write(st)
+    def __write(self, string_):
+        """Write a string."""
+        self.__output_file.write(string_)
 
-    def __writeItemValueFormat(self, myCategory):
-
+    def __write_item_value_format(self, category):
+        """Write items and values for the given category."""
         # Compute the maximum item name length within this category -
-        attribute_nameLengthMax = 0
-        for attribute_name in myCategory.attribute_list:
-            attribute_nameLengthMax = max(attribute_nameLengthMax, len(attribute_name))
-        itemNameLengthMax = self.__SPACING + len(myCategory.name) + attribute_nameLengthMax + 2
-        #
-        lineList = []
-        lineList.append("#\n")
-        for attribute_name, iPos in myCategory.attribute_list_with_order:
-            if self.__doDefinitionIndent:
+        attribute_name_max_length = 0
+        for attribute_name in category.attribute_list:
+            attribute_name_max_length = max(
+                attribute_name_max_length, len(attribute_name))
+        item_name_max_length = (
+            self.__spacing + len(category.name)
+            + attribute_name_max_length + 2)
+        line_list = []
+        line_list.append("#\n")
+        for attribute_name, _ in category.attribute_list_with_order:
+            if self._do_definition_indent:
                 # - add indent --
-                lineList.append(self.__indentSpace)
+                line_list.append(self.__indent_space)
+            item_name = "_%s.%s" % (category.name, attribute_name)
+            line_list.append(item_name.ljust(item_name_max_length))
+            line_list.append(category.get_value_formatted(attribute_name, 0))
+            line_list.append("\n")
+        self.__write("".join(line_list))
 
-            itemName = "_%s.%s" % (myCategory.name, attribute_name)
-            lineList.append(itemName.ljust(itemNameLengthMax))
-
-            lineList.append(myCategory.get_value_formatted(attribute_name, 0))
-            lineList.append("\n")
-
-        self.__write("".join(lineList))
-
-    def __writeTableFormat(self, myCategory):
-
+    def __write_table_format(self, category):
+        """Write table format data."""
         # Write the declaration of the loop_
-        #
-        lineList = []
-        lineList.append('#\n')
-        if self.__doDefinitionIndent:
-            lineList.append(self.__indentSpace)
-        lineList.append("loop_")
-        for attribute_name in myCategory.attribute_list:
-            lineList.append('\n')
-            if self.__doDefinitionIndent:
-                lineList.append(self.__indentSpace)
-            itemName = "_%s.%s" % (myCategory.name, attribute_name)
-            lineList.append(itemName)
-        self.__write("".join(lineList))
-
-        #
-        # Write the data in tabular format -
-        #
-        # print myCategory.name
-        # print myCategory.attribute_list
-
+        line_list = []
+        line_list.append('#\n')
+        if self._do_definition_indent:
+            line_list.append(self.__indent_space)
+        line_list.append("loop_")
+        for attribute_name in category.attribute_list:
+            line_list.append('\n')
+            if self._do_definition_indent:
+                line_list.append(self.__indent_space)
+            item_name = "_%s.%s" % (category.name, attribute_name)
+            line_list.append(item_name)
+        self.__write("".join(line_list))
+        # Write the data in tabular format
         # For speed make the following evaluation on a portion of the table
-        if self.__rowPartition is not None:
-            numSteps = max(1, myCategory.row_count / self.__rowPartition)
+        if self.__row_partition is not None:
+            num_steps = max(1, category.row_count / self.__row_partition)
         else:
-            numSteps = 1
-
-        formatTypeList, dataTypeList = myCategory.get_format_type_list(steps=numSteps)
-        maxLengthList = myCategory.get_max_attribute_list_length(steps=numSteps)
-        spacing = " " * self.__SPACING
-        #
-
-        # print formatTypeList
-        # print dataTypeList
-        # print maxLengthList
-        #
-        for iRow in range(myCategory.row_count):
-            lineList = []
-            lineList.append('\n')
-            if self.__doDefinitionIndent:
-                lineList.append(self.__indentSpace + " ")
-
-            for iAt in range(myCategory.attribute_count):
-                formatType = formatTypeList[iAt]
-                maxLength = maxLengthList[iAt]
-
-                if (formatType == 'FT_UNQUOTED_STRING' or formatType == 'FT_NULL_VALUE'):
-                    val = myCategory.get_value_formatted_by_index(iAt, iRow)
-                    lineList.append(val.ljust(maxLength))
-
-                elif formatType == 'FT_NUMBER':
-                    val = myCategory.get_value_formatted_by_index(iAt, iRow)
-                    lineList.append(val.rjust(maxLength))
-
-                elif formatType == 'FT_QUOTED_STRING':
-                    val = myCategory.get_value_formatted_by_index(iAt, iRow)
-
-                    lineList.append(val.ljust(maxLength + 2))
-
-                elif formatType == "FT_MULTI_LINE_STRING":
-                    val = myCategory.get_value_formatted_by_index(iAt, iRow)
-                    lineList.append(val)
-
-                lineList.append(spacing)
-
-            self.__write("".join(lineList))
+            num_steps = 1
+        format_type_list, _ = category.get_format_type_list(steps=num_steps)
+        max_length_list = category.get_max_attribute_list_length(steps=num_steps)
+        spacing = " " * self.__spacing
+        for irow in range(category.row_count):
+            line_list = []
+            line_list.append('\n')
+            if self._do_definition_indent:
+                line_list.append(self.__indent_space + " ")
+            for iattr in range(category.attribute_count):
+                format_type = format_type_list[iattr]
+                max_length = max_length_list[iattr]
+                if format_type in ('FT_UNQUOTED_STRING', 'FT_NULL_VALUE'):
+                    val = category.get_value_formatted_by_index(iattr, irow)
+                    line_list.append(val.ljust(max_length))
+                elif format_type == 'FT_NUMBER':
+                    val = category.get_value_formatted_by_index(iattr, irow)
+                    line_list.append(val.rjust(max_length))
+                elif format_type == 'FT_QUOTED_STRING':
+                    val = category.get_value_formatted_by_index(iattr, irow)
+                    line_list.append(val.ljust(max_length + 2))
+                elif format_type == "FT_MULTI_LINE_STRING":
+                    val = category.get_value_formatted_by_index(iattr, irow)
+                    line_list.append(val)
+                line_list.append(spacing)
+            self.__write("".join(line_list))
         self.__write("\n")
