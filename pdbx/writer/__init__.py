@@ -8,3 +8,4 @@ http://mmcif.wwpdb.org/docs/sw-examples/python/html/.
 See http://mmcif.wwpdb.org/docs/sw-examples/python/html/ for more information
 about this package, including examples.
 """
+__all__ = ["writer"]
