@@ -20,8 +20,8 @@ __version__   = "V0.01"
 import sys, unittest, traceback
 import sys, time, os, os.path, shutil
 
-from pdbx.reader.reader import reader
-from pdbx.writer.writer import writer
+from pdbx.reader.reader import PdbxReader
+from pdbx.writer.writer import PdbxWriter
 from pdbx.reader.containers import *
 
 
@@ -29,7 +29,7 @@ class PdbxReadWriteTests(unittest.TestCase):
     def setUp(self):
         self.lfh=sys.stdout
         self.verbose=False
-        self.pathPdbxDataFile     = "../tests/1kip.cif"
+        self.pathPdbxDataFile     = "tests/data/1kip.cif"
         self.pathOutputFile       = "testOutputDataFile.cif"
 
     def tearDown(self):
@@ -68,13 +68,13 @@ class PdbxReadWriteTests(unittest.TestCase):
             myContainerList=[]
             myContainerList.append(curContainer)
             ofh = open(fn, "w")        
-            pdbxW=writer(ofh)
+            pdbxW=PdbxWriter(ofh)
             pdbxW.write(myContainerList)
             ofh.close()
 
             myContainerList=[]            
             ifh = open(fn, "r")
-            pRd=reader(ifh)
+            pRd=PdbxReader(ifh)
             pRd.read(myContainerList)
             ifh.close()
             for container in myContainerList:
@@ -116,7 +116,7 @@ class PdbxReadWriteTests(unittest.TestCase):
             curContainer.printIt()
             #
             myDataList.append(curContainer)
-            pdbxW=writer(ofh)
+            pdbxW=PdbxWriter(ofh)
             pdbxW.write(myDataList)
             ofh.close()
         except:
@@ -153,7 +153,7 @@ class PdbxReadWriteTests(unittest.TestCase):
             curContainer.append(aCat)
             myDataList.append(curContainer)
             ofh = open("test-output-1.cif", "w")            
-            pdbxW=writer(ofh)
+            pdbxW=PdbxWriter(ofh)
             pdbxW.write(myDataList)
             ofh.close()
             #
@@ -162,7 +162,7 @@ class PdbxReadWriteTests(unittest.TestCase):
             # 
             myDataList=[]
             ifh = open("test-output-1.cif", "r")
-            pRd=reader(ifh)
+            pRd=PdbxReader(ifh)
             pRd.read(myDataList)
             ifh.close()
             #
@@ -170,11 +170,11 @@ class PdbxReadWriteTests(unittest.TestCase):
             myBlock.printIt()
             myCat=myBlock.getObj('pdbx_seqtool_mapping_ref')
             myCat.printIt()
-            for iRow in xrange(0,myCat.getRowCount()):
+            for iRow in range(0,myCat.getRowCount()):
                 myCat.setValue('some value', 'ref_mon_id',iRow)
                 myCat.setValue(100, 'ref_mon_num',iRow)
             ofh = open("test-output-2.cif", "w")            
-            pdbxW=writer(ofh)
+            pdbxW=PdbxWriter(ofh)
             pdbxW.write(myDataList)
             ofh.close()
             #
@@ -192,7 +192,7 @@ class PdbxReadWriteTests(unittest.TestCase):
             #
             myDataList=[]
             ifh = open(self.pathPdbxDataFile, "r")
-            pRd=reader(ifh)
+            pRd=PdbxReader(ifh)
             pRd.read(myDataList)
             ifh.close()            
         except:
@@ -207,12 +207,12 @@ class PdbxReadWriteTests(unittest.TestCase):
         try:
             myDataList=[]            
             ifh = open(self.pathPdbxDataFile, "r")
-            pRd=reader(ifh)
+            pRd=PdbxReader(ifh)
             pRd.read(myDataList)
             ifh.close()            
             
             ofh = open(self.pathOutputFile, "w")
-            pWr=writer(ofh)
+            pWr=PdbxWriter(ofh)
             pWr.write(myDataList)        
             ofh.close()
         except:

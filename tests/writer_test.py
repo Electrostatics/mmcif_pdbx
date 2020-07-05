@@ -23,15 +23,15 @@ __version__   = "V0.01"
 import sys, unittest, traceback
 import sys, time, os, os.path, shutil
 
-from pdbx.reader.reader  import reader
-from pdbx.writer.writer  import writer
+from pdbx.reader.reader  import PdbxReader
+from pdbx.writer.writer  import PdbxWriter
 from pdbx.reader.containers import *
 
 class writerTests(unittest.TestCase):
     def setUp(self):
         self.lfh=sys.stderr
         self.verbose=False
-        self.pathPdbxDataFile     ="../tests/1kip.cif"
+        self.pathPdbxDataFile     ="tests/data/1kip.cif"
         self.pathOutputFile       ="testOutputDataFile.cif"
 
     def tearDown(self):
@@ -61,7 +61,7 @@ class writerTests(unittest.TestCase):
             aCat.append((1,2,3,4,5,6,7))
             curContainer.append(aCat)
             myDataList.append(curContainer)
-            pdbxW=writer(ofh)
+            pdbxW=PdbxWriter(ofh)
             pdbxW.write(myDataList)
             ofh.close()
         except:
@@ -93,7 +93,7 @@ class writerTests(unittest.TestCase):
             aCat.append((1,2,3,4,5,6,7))
             curContainer.append(aCat)
             myDataList.append(curContainer)
-            pdbxW=writer(ofh)
+            pdbxW=PdbxWriter(ofh)
             pdbxW.write(myDataList)
             ofh.close()
             #
@@ -101,7 +101,7 @@ class writerTests(unittest.TestCase):
             # 
             myDataList=[]
             ifh = open("test-output-1.cif", "r")
-            pRd=reader(ifh)
+            pRd=PdbxReader(ifh)
             pRd.read(myDataList)
             ifh.close()
             #
@@ -109,11 +109,11 @@ class writerTests(unittest.TestCase):
             myBlock.printIt()
             myCat=myBlock.getObj('pdbx_seqtool_mapping_ref')
             myCat.printIt()
-            for iRow in xrange(0,myCat.getRowCount()):
+            for iRow in range(0,myCat.getRowCount()):
                 myCat.setValue('some value', 'ref_mon_id',iRow)
                 myCat.setValue(100, 'ref_mon_num',iRow)
             ofh = open("test-output-2.cif", "w")            
-            pdbxW=writer(ofh)
+            pdbxW=PdbxWriter(ofh)
             pdbxW.write(myDataList)
             ofh.close()            
             
@@ -126,37 +126,27 @@ class writerTests(unittest.TestCase):
         """
         self.lfh.write("\nStarting %s %s\n" % (self.__class__.__name__,
                                                sys._getframe().f_code.co_name))
-        try:
-            #
-            myDataList=[]
-            ifh = open(self.pathPdbxDataFile, "r")
-            pRd=reader(ifh)
-            pRd.read(myDataList)
-            ifh.close()            
-        except:
-            traceback.print_exc(file=sys.stderr)
-            self.fail()
+        myDataList=[]
+        ifh = open(self.pathPdbxDataFile, "r")
+        pRd=PdbxReader(ifh)
+        pRd.read(myDataList)
+        ifh.close()            
 
     def testReadWriteDataFile(self): 
         """Test case -  data file read write test
         """
         self.lfh.write("\nStarting %s %s\n" % (self.__class__.__name__,
                                                sys._getframe().f_code.co_name))
-        try:
-            #
-            myDataList=[]
-            ifh = open(self.pathPdbxDataFile, "r")            
-            pRd=reader(ifh)
-            pRd.read(myDataList)
-            ifh.close()            
-            
-            ofh = open(self.pathOutputFile, "w")
-            pWr=writer(ofh)
-            pWr.write(myDataList)        
-            ofh.close()
-        except:
-            traceback.print_exc(file=sys.stderr)
-            self.fail()
+        myDataList=[]
+        ifh = open(self.pathPdbxDataFile, "r")            
+        pRd=PdbxReader(ifh)
+        pRd.read(myDataList)
+        ifh.close()            
+        
+        ofh = open(self.pathOutputFile, "w")
+        pWr=PdbxWriter(ofh)
+        pWr.write(myDataList)        
+        ofh.close()
 
 def suite():
     return unittest.makeSuite(writerTests,'test')

@@ -15,16 +15,16 @@ Test cases for reading PDBx/mmCIF data files reader class -
 import sys, unittest, traceback
 import sys, time, os, os.path, shutil
 
-from pdbx.reader.reader import reader
+from pdbx.reader.reader import PdbxReader
 from pdbx.reader.containers import *
 
 class readerTests(unittest.TestCase):
     def setUp(self):
         self.lfh=sys.stderr
         self.verbose=False
-        self.pathPdbxDataFile     ="../tests/1kip.cif"
-        self.pathBigPdbxDataFile  ="../tests/1ffk.cif"
-        self.pathSFDataFile       ="../tests/1kip-sf.cif"
+        self.pathPdbxDataFile     ="tests/data/1kip.cif"
+        self.pathBigPdbxDataFile  ="tests/data/1ffk.cif"
+        self.pathSFDataFile       ="tests/data/1kip-sf.cif"
 
     def tearDown(self):
         pass
@@ -38,7 +38,7 @@ class readerTests(unittest.TestCase):
             #
             myDataList=[]
             ifh = open(self.pathPdbxDataFile, "r")
-            pRd=reader(ifh)
+            pRd=PdbxReader(ifh)
             pRd.read(myDataList)
             ifh.close()            
         except:
@@ -54,7 +54,7 @@ class readerTests(unittest.TestCase):
             #
             myDataList=[]
             ifh = open(self.pathBigPdbxDataFile, "r")
-            pRd=reader(ifh)
+            pRd=PdbxReader(ifh)
             pRd.read(myDataList)
             ifh.close()            
         except:
@@ -70,7 +70,7 @@ class readerTests(unittest.TestCase):
             #
             myContainerList=[]
             ifh = open(self.pathSFDataFile, "r")
-            pRd=reader(ifh)
+            pRd=PdbxReader(ifh)
             pRd.read(myContainerList)
             c0=myContainerList[0]
             #
