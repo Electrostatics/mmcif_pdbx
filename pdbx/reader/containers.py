@@ -1,6 +1,6 @@
 ##
 #
-# File:     PdbxContainers.py
+# File:     containers.py
 # Original: 02-Feb-2009   jdw
 #
 # Update:

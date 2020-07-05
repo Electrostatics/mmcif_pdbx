@@ -1,5 +1,5 @@
 ##
-# File:    PdbxReaderTests.py
+# File:    readerTests.py
 # Author:  jdw
 # Date:    9-Jan-2012
 # Version: 0.001
@@ -9,16 +9,16 @@
 #
 ##
 """
-Test cases for reading PDBx/mmCIF data files PdbxReader class -
+Test cases for reading PDBx/mmCIF data files reader class -
 
 """
 import sys, unittest, traceback
 import sys, time, os, os.path, shutil
 
-from pdbx.reader.PdbxReader import PdbxReader
-from pdbx.reader.PdbxContainers import *
+from pdbx.reader.reader import reader
+from pdbx.reader.containers import *
 
-class PdbxReaderTests(unittest.TestCase):
+class readerTests(unittest.TestCase):
     def setUp(self):
         self.lfh=sys.stderr
         self.verbose=False
@@ -38,7 +38,7 @@ class PdbxReaderTests(unittest.TestCase):
             #
             myDataList=[]
             ifh = open(self.pathPdbxDataFile, "r")
-            pRd=PdbxReader(ifh)
+            pRd=reader(ifh)
             pRd.read(myDataList)
             ifh.close()            
         except:
@@ -54,7 +54,7 @@ class PdbxReaderTests(unittest.TestCase):
             #
             myDataList=[]
             ifh = open(self.pathBigPdbxDataFile, "r")
-            pRd=PdbxReader(ifh)
+            pRd=reader(ifh)
             pRd.read(myDataList)
             ifh.close()            
         except:
@@ -70,7 +70,7 @@ class PdbxReaderTests(unittest.TestCase):
             #
             myContainerList=[]
             ifh = open(self.pathSFDataFile, "r")
-            pRd=PdbxReader(ifh)
+            pRd=reader(ifh)
             pRd.read(myContainerList)
             c0=myContainerList[0]
             #
@@ -115,9 +115,9 @@ class PdbxReaderTests(unittest.TestCase):
 
 def simpleSuite():
     suiteSelect = unittest.TestSuite()
-    suiteSelect.addTest(PdbxReaderTests("testReadBigDataFile"))
-    suiteSelect.addTest(PdbxReaderTests("testReadSmallDataFile"))    
-    suiteSelect.addTest(PdbxReaderTests("testReadSFDataFile"))
+    suiteSelect.addTest(readerTests("testReadBigDataFile"))
+    suiteSelect.addTest(readerTests("testReadSmallDataFile"))    
+    suiteSelect.addTest(readerTests("testReadSFDataFile"))
     return suiteSelect
 
 if __name__ == '__main__':

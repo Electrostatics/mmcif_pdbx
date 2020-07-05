@@ -1,6 +1,6 @@
 ##
-# File:  PdbxWriter.py
-# Date:  2011-10-09 Jdw  Adapted from PdbxParser.py
+# File:  writer.py
+# Date:  2011-10-09 Jdw  Adapted from parser.py
 #
 # Updates:
 #    5-Apr-2011 jdw  Using the double quote format preference
@@ -18,14 +18,14 @@ __license__   = "Creative Commons Attribution 3.0 Unported"
 __version__   = "V0.01"
 
 
-from pdbx.reader.PdbxContainers import *
+from pdbx.reader.containers import *
 
 class PdbxError(Exception):
     """ Class for catch general errors 
     """
     pass
 
-class PdbxWriter(object):
+class writer(object):
     """Write PDBx data files or dictionaries using the input container
        or container list.
     """

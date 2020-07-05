@@ -1,5 +1,5 @@
 ##
-# File:    PdbxWriterTests.py
+# File:    writerTests.py
 # Author:  jdw
 # Date:    3-November-2009
 # Version: 0.001
@@ -23,11 +23,11 @@ __version__   = "V0.01"
 import sys, unittest, traceback
 import sys, time, os, os.path, shutil
 
-from pdbx.reader.PdbxReader  import PdbxReader
-from pdbx.writer.PdbxWriter  import PdbxWriter
-from pdbx.reader.PdbxContainers import *
+from pdbx.reader.reader  import reader
+from pdbx.writer.writer  import writer
+from pdbx.reader.containers import *
 
-class PdbxWriterTests(unittest.TestCase):
+class writerTests(unittest.TestCase):
     def setUp(self):
         self.lfh=sys.stderr
         self.verbose=False
@@ -61,7 +61,7 @@ class PdbxWriterTests(unittest.TestCase):
             aCat.append((1,2,3,4,5,6,7))
             curContainer.append(aCat)
             myDataList.append(curContainer)
-            pdbxW=PdbxWriter(ofh)
+            pdbxW=writer(ofh)
             pdbxW.write(myDataList)
             ofh.close()
         except:
@@ -93,7 +93,7 @@ class PdbxWriterTests(unittest.TestCase):
             aCat.append((1,2,3,4,5,6,7))
             curContainer.append(aCat)
             myDataList.append(curContainer)
-            pdbxW=PdbxWriter(ofh)
+            pdbxW=writer(ofh)
             pdbxW.write(myDataList)
             ofh.close()
             #
@@ -101,7 +101,7 @@ class PdbxWriterTests(unittest.TestCase):
             # 
             myDataList=[]
             ifh = open("test-output-1.cif", "r")
-            pRd=PdbxReader(ifh)
+            pRd=reader(ifh)
             pRd.read(myDataList)
             ifh.close()
             #
@@ -113,7 +113,7 @@ class PdbxWriterTests(unittest.TestCase):
                 myCat.setValue('some value', 'ref_mon_id',iRow)
                 myCat.setValue(100, 'ref_mon_num',iRow)
             ofh = open("test-output-2.cif", "w")            
-            pdbxW=PdbxWriter(ofh)
+            pdbxW=writer(ofh)
             pdbxW.write(myDataList)
             ofh.close()            
             
@@ -130,7 +130,7 @@ class PdbxWriterTests(unittest.TestCase):
             #
             myDataList=[]
             ifh = open(self.pathPdbxDataFile, "r")
-            pRd=PdbxReader(ifh)
+            pRd=reader(ifh)
             pRd.read(myDataList)
             ifh.close()            
         except:
@@ -146,12 +146,12 @@ class PdbxWriterTests(unittest.TestCase):
             #
             myDataList=[]
             ifh = open(self.pathPdbxDataFile, "r")            
-            pRd=PdbxReader(ifh)
+            pRd=reader(ifh)
             pRd.read(myDataList)
             ifh.close()            
             
             ofh = open(self.pathOutputFile, "w")
-            pWr=PdbxWriter(ofh)
+            pWr=writer(ofh)
             pWr.write(myDataList)        
             ofh.close()
         except:
@@ -159,7 +159,7 @@ class PdbxWriterTests(unittest.TestCase):
             self.fail()
 
 def suite():
-    return unittest.makeSuite(PdbxWriterTests,'test')
+    return unittest.makeSuite(writerTests,'test')
 
 if __name__ == '__main__':
     unittest.main()

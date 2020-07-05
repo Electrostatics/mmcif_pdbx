@@ -1,17 +1,17 @@
 ##
-# File:  PdbxParser.py
+# File:  parser.py
 # Date:  2009-10-25 Jdw  Original from py-pdbx-parser-v2 
 #
 # Update:
 #
 # 2009-11-05 - (jdw) Change table storage architecture for list of
 #                   dictionaries to list of lists.
-# 2012-01-09 - (jdw) This module now obsolted by PdbxReader/PdbxWriter
+# 2012-01-09 - (jdw) This module now obsolted by reader/writer
 #                   modules.  APIs are preserved.
 #
 # 2012-09-01 - (jdw) Revise tokenizer to better handle embedded quoting.
 #
-# NOTE -       - Now obsolete - Use pdb.reader.PdbxReader & pdbx.writer.PdbxWriter
+# NOTE -       - Now obsolete - Use pdb.reader.reader & pdbx.writer.writer
 #
 ##
 """
@@ -35,7 +35,7 @@ __license__   = "Creative Commons Attribution 3.0 Unported"
 __version__   = "V0.01"
 
 import re,sys
-from pdbx.reader.PdbxContainers import *
+from pdbx.reader.containers import *
 
 class PdbxError(Exception):
     """ Class for catch general errors 
@@ -55,7 +55,7 @@ class SyntaxError(Exception):
 
 
 
-class PdbxReader(object):
+class reader(object):
     """ PDBx reader for data files and dictionaries.
     
     """
@@ -486,7 +486,7 @@ class PdbxReader(object):
                     yield groups
 
 
-class PdbxWriter(object):
+class writer(object):
     """Write PDBx data files or dictionaries using the input container
        or container list.
     """

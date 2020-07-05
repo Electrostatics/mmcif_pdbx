@@ -1,6 +1,6 @@
 ##
-# File:  PdbxReader.py
-# Date:  2012-01-09  Jdw  Adapted from PdbxParser
+# File:  reader.py
+# Date:  2012-01-09  Jdw  Adapted from parser
 #
 # Updates:
 #
@@ -24,7 +24,7 @@ Acknowledgements:
 """
 
 import re,sys
-from pdbx.reader.PdbxContainers import *
+from pdbx.reader.containers import *
 
 class PdbxError(Exception):
     """ Class for catch general errors 
@@ -44,7 +44,7 @@ class SyntaxError(Exception):
 
 
 
-class PdbxReader(object):
+class reader(object):
     """ PDBx reader for data files and dictionaries.
     
     """
