@@ -1,3 +1,5 @@
+![Tests](https://github.com/Electrostatics/mmcif_pdbx/workflows/Tests/badge.svg)
+
 # PDBx/mmCIF Dictionary Resources
 
 This is yet another PyPI package for http://mmcif.wwpdb.org/pdbx-mmcif-home-page.html.
