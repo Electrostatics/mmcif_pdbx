@@ -5,122 +5,38 @@
 # Version: 0.001
 #
 # Update:
-#  27-Sep-2012  jdw add test case for reading PDBx structure factor file 
+#  27-Sep-2012  jdw add test case for reading PDBx structure factor file
 #
 ##
-"""
-Test cases for reading PDBx/mmCIF data files reader class -
-
-"""
-import sys, unittest, traceback
-import sys, time, os, os.path, shutil
-
-from pdbx.reader.reader import PdbxReader
-from pdbx.reader.containers import *
-
-class readerTests(unittest.TestCase):
-    def setUp(self):
-        self.lfh=sys.stderr
-        self.verbose=False
-        self.pathPdbxDataFile     ="tests/data/1kip.cif"
-        self.pathBigPdbxDataFile  ="tests/data/1ffk.cif"
-        self.pathSFDataFile       ="tests/data/1kip-sf.cif"
-
-    def tearDown(self):
-        pass
-
-    def testReadSmallDataFile(self): 
-        """Test case -  read data file 
-        """
-        self.lfh.write("\nStarting %s %s\n" % (self.__class__.__name__,
-                                               sys._getframe().f_code.co_name))
-        try:
-            #
-            myDataList=[]
-            ifh = open(self.pathPdbxDataFile, "r")
-            pRd=PdbxReader(ifh)
-            pRd.read(myDataList)
-            ifh.close()            
-        except:
-            traceback.print_exc(file=sys.stderr)
-            self.fail()
-
-    def testReadBigDataFile(self): 
-        """Test case -  read data file 
-        """
-        self.lfh.write("\nStarting %s %s\n" % (self.__class__.__name__,
-                                               sys._getframe().f_code.co_name))
-        try:
-            #
-            myDataList=[]
-            ifh = open(self.pathBigPdbxDataFile, "r")
-            pRd=PdbxReader(ifh)
-            pRd.read(myDataList)
-            ifh.close()            
-        except:
-            traceback.print_exc(file=sys.stderr)
-            self.fail()
-
-    def testReadSFDataFile(self): 
-        """Test case -  read PDB structure factor data  file and compute statistics on f/sig(f).
-        """
-        self.lfh.write("\nStarting %s %s\n" % (self.__class__.__name__,
-                                               sys._getframe().f_code.co_name))
-        try:
-            #
-            myContainerList=[]
-            ifh = open(self.pathSFDataFile, "r")
-            pRd=PdbxReader(ifh)
-            pRd.read(myContainerList)
-            c0=myContainerList[0]
-            #
-            catObj=c0.getObj("refln")
-            if catObj is None:
-                return false
-        
-            nRows=catObj.getRowCount()
-            #
-            # Get column name index.
-            #
-            itDict={}
-            itNameList=catObj.getItemNameList()
-            for idxIt,itName in enumerate(itNameList):
-                itDict[str(itName).lower()]=idxIt
-                #
-            idf=itDict['_refln.f_meas_au']
-            idsigf=itDict['_refln.f_meas_sigma_au']
-            minR=100
-            maxR=-1
-            sumR=0
-            icount=0
-            for row in  catObj.getRowList():
-                try:
-                    f=float(row[idf])
-                    sigf=float(row[idsigf])
-                    ratio=sigf/f
-                    #self.lfh.write(" %f %f %f\n" % (f,sigf,ratio))
-                    maxR=max(maxR,ratio)
-                    minR=min(minR,ratio)
-                    sumR+=ratio
-                    icount+=1
-                except:
-                    continue
-            
-            ifh.close()
-            self.lfh.write("f/sig(f) min %f max %f avg %f count %d\n" % (minR, maxR, sumR/icount,icount))
-        except:
-            traceback.print_exc(file=sys.stderr)
-            self.fail()
+"""Test cases for reading PDBx/mmCIF data files reader class."""
+import logging
+from pathlib import Path
+import pytest
+from pdbx.reader import PdbxReader
 
 
-def simpleSuite():
-    suiteSelect = unittest.TestSuite()
-    suiteSelect.addTest(readerTests("testReadBigDataFile"))
-    suiteSelect.addTest(readerTests("testReadSmallDataFile"))    
-    suiteSelect.addTest(readerTests("testReadSFDataFile"))
-    return suiteSelect
+DATA_DIR = Path("tests/data")
+LOGGER = logging.getLogger()
 
-if __name__ == '__main__':
-    mySuite=simpleSuite()    
-    unittest.TextTestRunner(verbosity=2).run(mySuite)
-    #
+
+@pytest.mark.parametrize("input_cif", ["1kip.cif", "1ffk.cif"], ids=str)
+def test_data_file(input_cif):
+    """Test data file input."""
+    input_path = DATA_DIR / Path(input_cif)
+    with open(input_path, "rt") as input_file:
+        reader = PdbxReader(input_file)
+        data_list = []
+        reader.read(data_list)
+
+
+@pytest.mark.parametrize("input_cif", ["1kip-sf.cif"], ids=str)
+def test_structure_factor_file(input_cif):
+    """Test structure factor input."""
+    input_path = DATA_DIR / Path(input_cif)
+    with open(input_path, "rt") as input_file:
+        reader = PdbxReader(input_file)
+        container_list = []
+        reader.read(container_list)
+    container = container_list[0]
+    refln_object = container.get_object("refln")
+    assert refln_object is not None
