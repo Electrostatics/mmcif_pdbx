@@ -15,9 +15,7 @@
 # 28-Jun-2013 jdw export remove method
 # 29-Jun-2013 jdw export remove row method
 ##
-"""
-
-A collection of container classes supporting the PDBx/mmCIF storage model.
+"""A collection of container classes supporting the PDBx/mmCIF storage model.
 
 A base container class is defined which supports common features of
 data and definition containers. PDBx data files are organized in
@@ -44,8 +42,6 @@ import traceback
 __docformat__ = "restructuredtext en"
 __author__ = "John Westbrook"
 __email__ = "jwest@rcsb.rutgers.edu"
-__license__ = "Creative Commons Attribution 3.0 Unported"
-__version__ = "V0.01"
 
 
 class CifName:
@@ -105,7 +101,7 @@ class ContainerBase:
 
     def exists(self, name):
         """Determine if object name exists in object catalog."""
-        return (name in self.__object_catalog)
+        return name in self.__object_catalog
 
     def get_object(self, name):
         """Get object from object catalog."""

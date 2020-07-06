@@ -12,7 +12,7 @@
 import logging
 from pathlib import Path
 import pytest
-from pdbx.reader.reader import PdbxReader
+from pdbx.reader import PdbxReader
 
 
 DATA_DIR = Path("tests/data")

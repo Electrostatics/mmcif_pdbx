@@ -11,8 +11,8 @@
 """Test PDBx/mmCIF write and formatting operations."""
 import logging
 from pathlib import Path
-from pdbx.reader.containers import DataContainer, DataCategory
-from pdbx.writer.writer import PdbxWriter
+from pdbx.containers import DataContainer, DataCategory
+from pdbx.writer import PdbxWriter
 
 
 _LOGGER = logging.getLogger()

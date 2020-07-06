@@ -11,9 +11,9 @@
 """Test reading, writing, and updating files."""
 import logging
 from pathlib import Path
-from pdbx.reader.reader import PdbxReader
-from pdbx.writer.writer import PdbxWriter
-from pdbx.reader.containers import DataCategory, DataContainer
+from pdbx.reader import PdbxReader
+from pdbx.writer import PdbxWriter
+from pdbx.reader import DataCategory, DataContainer
 
 
 _LOGGER = logging.getLogger()

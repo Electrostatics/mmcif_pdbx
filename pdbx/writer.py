@@ -9,7 +9,8 @@
 ###
 """Classes for writing data and dictionary containers in PDBx/mmCIF format."""
 from sys import stdout
-from ..reader.containers import DefinitionContainer, DataContainer
+from .containers import DefinitionContainer, DataContainer
+from .errors import PdbxError
 
 __docformat__ = "restructuredtext en"
 __author__ = "John Westbrook"
@@ -20,12 +21,6 @@ MAXIMUM_LINE_LENGTH = 2048
 SPACING = 2
 INDENT_DEFINITION = 3
 DO_DEFINITION_INDENT = False
-
-
-class PdbxError(Exception):
-    """Class for catch general errors.
-    TODO - consolidate error classes.
-    """
 
 
 class PdbxWriter:

@@ -22,22 +22,7 @@ See: http://pymmlib.sourceforge.net/
 """
 import re
 from .containers import DataCategory, DefinitionContainer, DataContainer
-
-
-class PdbxError(Exception):
-    """Class for catching general errors."""
-
-
-class PdbxSyntaxError(Exception):
-    """Class for catching syntax errors."""
-
-    def __init__(self, line_number, text):
-        super().__init__(self)
-        self.line_number = line_number
-        self.text = text
-
-    def __str__(self):
-        return "%%ERROR - [at line: %d] %s" % (self.line_number, self.text)
+from .errors import PdbxSyntaxError, PdbxError
 
 
 class PdbxReader:
@@ -194,7 +179,7 @@ class PdbxReader:
                 continue
 
             # Process a loop_ declaration and associated data
-            elif state == "ST_TABLE":
+            if state == "ST_TABLE":
                 # The category name in the next current_category_name,
                 # current_attribute_name pair defines the name of the category
                 # container.
@@ -266,7 +251,8 @@ class PdbxReader:
                         if reserved_word is not None:
                             break
                 continue
-            elif state == "ST_DEFINITION":
+
+            if state == "ST_DEFINITION":
                 # Ignore trailing unnamed saveframe delimiters e.g. 'save_'
                 state_name = self.__get_container_name(current_word)
                 if len(state_name) > 0:
@@ -288,7 +274,8 @@ class PdbxReader:
                     current_quoted_string, current_word = next(tokenizer)
             elif state == "ST_STOP":
                 return
-            elif state == "ST_GLOBAL":
+
+            if state == "ST_GLOBAL":
                 current_container = DataContainer("blank-global")
                 current_container.set_global()
                 container_list.append(current_container)
