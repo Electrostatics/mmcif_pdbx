@@ -355,7 +355,8 @@ class DataCategory(DataCategoryBase):
     def remove_row(self, index):
         """Remove specified row."""
         try:
-            if ((index >= 0) and (index < len(self._row_list))):
+            #if ((index >= 0) and (index < len(self._row_list))):
+            if (index >= 0 and self._row_list):
                 del self._row_list[index]
                 if self.__current_row_index >= len(self._row_list):
                     self.__current_row_index = len(self._row_list) - 1
@@ -447,9 +448,9 @@ class DataCategory(DataCategoryBase):
             self._attribute_name_list.append(attribute_name)
             self._catalog[attribute_name_lower] = attribute_name
             # add a placeholder to any existing rows for the new attribute.
-            if len(self._row_list) > 0:
-                for row in self._row_list:
-                    row.append("?")
+            #if len(self._row_list) > 0:
+            for row in self._row_list:
+                row.append("?")
         self._num_attributes = len(self._attribute_name_list)
 
     def get_value(self, attribute_name=None, row_index=None):
@@ -539,8 +540,8 @@ class DataCategory(DataCategoryBase):
         self.__current_attribute = attribute_name
         self.append_attribute(attribute_name)
         ind = self._attribute_name_list.index(attribute_name)
-        if len(self._row_list) == 0:
-            row = [None] * len(self._attribute_name_list)*2
+        if not self._row_list:
+            row = [None] * len(self._attribute_name_list) * 2
             row[ind] = None
             self._row_list.append(row)
         for row in self._row_list:

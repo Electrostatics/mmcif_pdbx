@@ -68,13 +68,13 @@ class PdbxWriter:
             obj = container.get_object(name)
             object_list = obj.row_list
             # Skip empty objects
-            if len(object_list) == 0:
+            if not object_list:
                 continue
             # Item - value formattting
             if len(object_list) == 1:
                 self.__write_item_value_format(obj)
             # Table formatting
-            elif len(object_list) > 1 and len(obj.attribute_list) > 0:
+            elif len(object_list) > 1 and obj.attribute_list:
                 self.__write_table_format(obj)
             else:
                 raise PdbxError(

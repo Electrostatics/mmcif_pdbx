@@ -255,7 +255,7 @@ class PdbxReader:
             if state == "ST_DEFINITION":
                 # Ignore trailing unnamed saveframe delimiters e.g. 'save_'
                 state_name = self.__get_container_name(current_word)
-                if len(state_name) > 0:
+                if state_name:
                     current_container = DefinitionContainer(state_name)
                     container_list.append(current_container)
                     category_index = {}
@@ -264,7 +264,7 @@ class PdbxReader:
                     current_quoted_string, current_word = next(tokenizer)
             elif state == "ST_DATA_CONTAINER":
                 data_name = self.__get_container_name(current_word)
-                if len(data_name) == 0:
+                if data_name:
                     data_name = "unidentified"
                 current_container = DataContainer(data_name)
                 container_list.append(current_container)

@@ -3,7 +3,7 @@ import setuptools
 
 
 with open("README.md", "r") as fh:
-    long_description = fh.read()
+    LONG_DESCRIPTION = fh.read()
 
 
 setuptools.setup(
@@ -14,7 +14,7 @@ setuptools.setup(
     maintainer="Nathan Baker",
     maintainer_email="nathanandrewbaker@gmail.com",
     description="Python utilities for PDBx/mmCIF storage model",
-    long_description=long_description,
+    long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/Electrostatics/mmcif_pdbx",
     packages=setuptools.find_packages(),
