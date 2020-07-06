@@ -5,7 +5,7 @@
 # Version: 0.001
 #
 # Update:
-#  27-Sep-2012  jdw add test case for reading PDBx structure factor file 
+#  27-Sep-2012  jdw add test case for reading PDBx structure factor file
 #
 ##
 """Test cases for reading PDBx/mmCIF data files reader class."""
@@ -20,8 +20,8 @@ LOGGER = logging.getLogger()
 
 
 @pytest.mark.parametrize("input_cif", ["1kip.cif", "1ffk.cif"], ids=str)
-def test_data_file(input_cif): 
-    """Read a small data file."""
+def test_data_file(input_cif):
+    """Test data file input."""
     input_path = DATA_DIR / Path(input_cif)
     with open(input_path, "rt") as input_file:
         reader = PdbxReader(input_file)
@@ -31,6 +31,7 @@ def test_data_file(input_cif):
 
 @pytest.mark.parametrize("input_cif", ["1kip-sf.cif"], ids=str)
 def test_structure_factor_file(input_cif):
+    """Test structure factor input."""
     input_path = DATA_DIR / Path(input_cif)
     with open(input_path, "rt") as input_file:
         reader = PdbxReader(input_file)
@@ -38,4 +39,4 @@ def test_structure_factor_file(input_cif):
         reader.read(container_list)
     container = container_list[0]
     refln_object = container.get_object("refln")
-    assert(refln_object is not None)
+    assert refln_object is not None
