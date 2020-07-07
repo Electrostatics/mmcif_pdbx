@@ -46,9 +46,7 @@ class PdbxReader:
         try:
             self.__parser(self.__tokenizer(self.__input_file), container_list)
         except StopIteration:
-            pass
-        else:
-            raise PdbxError()
+            self.__syntax_error("Unexpected end of file")
 
     def __syntax_error(self, error_text):
         """Raise a PdbxSyntaxError."""
@@ -97,14 +95,16 @@ class PdbxReader:
         state = None
 
         # Find the first reserved word and begin capturing data.
-        while True:
-            current_category_name, current_attribute_name, \
-                current_quoted_string, current_word = next(tokenizer)
+        for (current_category_name, current_attribute_name,
+             current_quoted_string, current_word) in tokenizer:
             if current_word is None:
                 continue
             reserved_word, state = self.__get_state(current_word)
             if reserved_word is not None:
                 break
+        else:
+            # empty file
+            return
 
         while True:
             # Set the current state: at this point in the processing cycle we
@@ -174,8 +174,8 @@ class PdbxReader:
                 try:
                     current_category_name, current_attribute_name, \
                         current_quoted_string, current_word = next(tokenizer)
-                except RuntimeError as err:
-                    raise StopIteration(err)
+                except StopIteration:
+                    return
                 continue
 
             # Process a loop_ declaration and associated data
@@ -205,9 +205,8 @@ class PdbxReader:
                     return
                 current_category.append_attribute(current_attribute_name)
                 # Read the rest of the loop_ declaration
-                while True:
-                    current_category_name, current_attribute_name, \
-                        current_quoted_string, current_word = next(tokenizer)
+                for (current_category_name, current_attribute_name,
+                     current_quoted_string, current_word) in tokenizer:
                     if current_category_name is None:
                         break
                     if current_category_name != current_category.name:
@@ -215,6 +214,9 @@ class PdbxReader:
                             "Changed category name in loop_ declaration")
                         return
                     current_category.append_attribute(current_attribute_name)
+                else:
+                    # formal CIF 1.1 grammar expects at least one value
+                    self.__syntax_error("loop_ without values")
                 # If the next token is a 'word', check it for any reserved
                 # words
                 if current_word is not None:
@@ -239,8 +241,8 @@ class PdbxReader:
                             current_category_name, current_attribute_name, \
                                 current_quoted_string, current_word = next(
                                     tokenizer)
-                        except RuntimeError as err:
-                            raise StopIteration(err)
+                        except StopIteration:
+                            return
                     # loop_ data processing ends if a new _category.attribute
                     # is encountered
                     if current_category_name is not None:
@@ -260,8 +262,6 @@ class PdbxReader:
                     container_list.append(current_container)
                     category_index = {}
                     current_category = None
-                current_category_name, current_attribute_name, \
-                    current_quoted_string, current_word = next(tokenizer)
             elif state == "ST_DATA_CONTAINER":
                 data_name = self.__get_container_name(current_word)
                 if data_name:
@@ -270,22 +270,25 @@ class PdbxReader:
                 container_list.append(current_container)
                 category_index = {}
                 current_category = None
-                current_category_name, current_attribute_name, \
-                    current_quoted_string, current_word = next(tokenizer)
             elif state == "ST_STOP":
                 return
-
-            if state == "ST_GLOBAL":
+            elif state == "ST_GLOBAL":
                 current_container = DataContainer("blank-global")
                 current_container.set_global()
                 container_list.append(current_container)
                 category_index = {}
                 current_category = None
-                current_category_name, current_attribute_name, \
-                    current_quoted_string, current_word = next(tokenizer)
             elif state == "ST_UNKNOWN":
                 self.__syntax_error(
                     "Unrecognized syntax element: " + str(current_word))
+                return
+            else:
+                assert False, f"unhandled state {state}"
+
+            try:
+                current_category_name, current_attribute_name, \
+                    current_quoted_string, current_word = next(tokenizer)
+            except StopIteration:
                 return
 
     def __tokenizer(self, input_file):
@@ -311,8 +314,7 @@ class PdbxReader:
         )
         file_iterator = iter(input_file)
         # Tokenizer loop begins here
-        while True:
-            line = next(file_iterator)
+        for line in file_iterator:
             self.__current_line_number += 1
             # Dump comments
             if line.startswith("#"):
@@ -321,12 +323,13 @@ class PdbxReader:
             # and stuff this into the string slot in the return tuple
             if line.startswith(";"):
                 multiline_string = [line[1:]]
-                while True:
-                    line = next(file_iterator)
+                for line in file_iterator:
                     self.__current_line_number += 1
                     if line.startswith(";"):
                         break
                     multiline_string.append(line)
+                else:
+                    self.__syntax_error("unterminated multi-line string")
                 # remove trailing new-line that is part of the \n; delimiter
                 multiline_string[-1] = multiline_string[-1].rstrip()
                 yield (None, None, "".join(multiline_string), None)
