@@ -16,7 +16,7 @@ See http://mmcif.wwpdb.org/docs/sw-examples/python/html/ for more information ab
 ## Versions
 
 Versions 0.* maintain API compatibility with the original code.
-Subsequent version break that compatibility, primarily by renaming methods in compliance with PEP8.
+Subsequent versions break that compatibility, primarily by renaming methods in compliance with PEP8.
 
 ## Installing this software
 
