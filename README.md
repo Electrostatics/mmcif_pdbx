@@ -3,12 +3,9 @@
 
 # PDBx/mmCIF Dictionary Resources
 
-This is yet another PyPI package for http://mmcif.wwpdb.org/pdbx-mmcif-home-page.html.
-Others include:
+This is yet another PyPI package for http://mmcif.wwpdb.org/pdbx-mmcif-home-page.html.  It emphasizes a simple and pure Python interface to basic mmCIF functionality.
 
-* https://pypi.org/project/mmcif/ and https://pypi.org/project/mmcif.utils/ -- the author of this package is John Westbrook and the homepage is http://mmcif.wwpdb.org/, which suggests it may be the canonical version.
-Unfortunately, the PyPI package does not compile on many platforms (e.g., Windows 10 with Python 3.8) and does not provide a repository for pull requests to fix the problems.
-* https://pypi.org/project/pdbx-mmcif/ -- this package includes very little documentation and the homepage https://github.com/ostrokach/pdbx is the fork of another repo, which does not inspire confidence in long-term maintenance and bug fixes.
+The canonical mmCIF Python package can be found at https://github.com/rcsb/py-mmcif.  It is full-featured and includes C/C++ code to accelerate I/O functions.  
 
 ## Origin of this software
 All of the code in this repository is based on http://mmcif.wwpdb.org/.
