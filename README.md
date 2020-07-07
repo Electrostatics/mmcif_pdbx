@@ -20,3 +20,7 @@ See http://mmcif.wwpdb.org/docs/sw-examples/python/html/ for more information ab
 
 Versions 0.* maintain API compatibility with the original code.
 Subsequent version break that compatibility, primarily by renaming methods in compliance with PEP8.
+
+## Installing this software
+
+This python package can be installed via [setuptools](https://pypi.org/project/setuptools/), `pip install .`, or via [PyPI](https://pypi.org/project/mmcif-pdbx/).
