@@ -628,7 +628,8 @@ class DataCategory(DataCategoryBase):
                 return ([str(inp)], 'DT_FLOAT')
             # null value handling
             if inp in (".", "?"):
-                return ([inp], 'DT_NULL_VALUE')
+                return (self.__double_quoted_list(inp),
+                        'DT_DOUBLE_QUOTED_STRING')
             if inp == "":
                 return (["."], 'DT_NULL_VALUE')
             # Contains white space or quotes ?
@@ -689,7 +690,7 @@ class DataCategory(DataCategoryBase):
             return 'DT_FLOAT'
         # null value handling
         if inp in (".", "?"):
-            return 'DT_NULL_VALUE'
+            return 'DT_DOUBLE_QUOTED_STRING'
         if inp == "":
             return 'DT_NULL_VALUE'
         # Contains white space or quotes ?

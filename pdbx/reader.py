@@ -160,7 +160,11 @@ class PdbxReader:
                     self.__syntax_error(
                         "Missing data for item _%s.%s" % (
                             current_category_name, current_attribute_name))
-                if current_word is not None:
+                if current_word == '?':
+                    current_row.append(None)
+                elif current_word == '.':
+                    current_row.append('')
+                elif current_word is not None:
                     # Validation check token for misplaced reserved words
                     reserved_word, state = self.__get_state(current_word)
                     if reserved_word is not None:
@@ -233,7 +237,11 @@ class PdbxReader:
                     current_row = []
                     current_category.append(current_row)
                     for _ in current_category.attribute_list:
-                        if current_word is not None:
+                        if current_word == '?':
+                            current_row.append(None)
+                        elif current_word == '.':
+                            current_row.append('')
+                        elif current_word is not None:
                             current_row.append(current_word)
                         elif current_quoted_string is not None:
                             current_row.append(current_quoted_string)
