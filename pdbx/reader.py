@@ -264,7 +264,7 @@ class PdbxReader:
                     current_category = None
             elif state == "ST_DATA_CONTAINER":
                 data_name = self.__get_container_name(current_word)
-                if data_name:
+                if not data_name:
                     data_name = "unidentified"
                 current_container = DataContainer(data_name)
                 container_list.append(current_container)
