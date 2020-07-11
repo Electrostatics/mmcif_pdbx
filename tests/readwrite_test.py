@@ -11,6 +11,7 @@
 """Test reading, writing, and updating files."""
 import logging
 from pathlib import Path
+import pdbx
 from pdbx.reader import PdbxReader
 from pdbx.writer import PdbxWriter
 from pdbx.reader import DataCategory, DataContainer
@@ -101,10 +102,38 @@ def test_read_write_data_file(tmp_path):
     """Data file read/write test."""
     input_path = Path(DATA_DIR) / Path("1kip.cif")
     with open(input_path, "rt") as input_file:
-        reader = PdbxReader(input_file)
-        data_list = []
-        reader.read(data_list)
+        data_list = pdbx.load(input_file)
     output_path = Path(tmp_path) / Path("testOutputDataFile.cif")
     with open(output_path, "wt") as output_path:
-        writer = PdbxWriter(output_path)
-        writer.write(data_list)
+        pdbx.dump(data_list, output_path)
+
+
+ROUNDTRIPPABLE_CIF_STR = '''data_foo
+#
+#
+_cat1.key1  123
+_cat1.key2  12.3
+_cat1.key3  unquoted
+##
+_cat2.key1  "quoted string"
+_cat2.key2  
+;muli line
+string
+;
+
+_cat2.key3  "  leadingspace"
+_cat2.key4  "trailingspace  "
+_cat2.key5  'embedded " double-quote space'
+_cat2.key6  "embedded ' single-quote space"
+##
+loop_
+_cat3.nullvalues
+_cat3.strings
+.           "."      
+?           "?"      
+##
+'''
+
+def test_roundtrip():
+    containers = pdbx.loads(ROUNDTRIPPABLE_CIF_STR)
+    assert pdbx.dumps(containers) == ROUNDTRIPPABLE_CIF_STR
