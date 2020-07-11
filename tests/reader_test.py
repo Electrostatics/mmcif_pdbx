@@ -15,6 +15,7 @@ from pathlib import Path
 import pytest
 from pdbx.errors import PdbxSyntaxError
 from pdbx.reader import PdbxReader
+from pdbx import loads as read_cifstr
 
 
 DATA_DIR = Path("tests/data")
@@ -42,13 +43,6 @@ def test_structure_factor_file(input_cif):
     container = container_list[0]
     refln_object = container.get_object("refln")
     assert refln_object is not None
-
-
-def read_cifstr(cifstr: str) -> list:
-    """Helper function"""
-    data = []
-    PdbxReader(io.StringIO(cifstr)).read(data)
-    return data
 
 
 def test_empty_file():
