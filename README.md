@@ -1,5 +1,6 @@
 [![Tests](https://github.com/Electrostatics/mmcif_pdbx/workflows/Tests/badge.svg)](https://github.com/Electrostatics/mmcif_pdbx/actions?query=workflow%3ATests)
 [![codecov](https://codecov.io/gh/Electrostatics/mmcif_pdbx/branch/master/graph/badge.svg)](https://codecov.io/gh/Electrostatics/mmcif_pdbx)
+[![Documentation Status](https://readthedocs.org/projects/mmcif-pdbx/badge/?version=latest)](https://mmcif-pdbx.readthedocs.io/en/latest/?badge=latest)
 
 # PDBx/mmCIF Dictionary Resources
 
