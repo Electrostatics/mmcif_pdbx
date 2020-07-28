@@ -27,6 +27,7 @@ class PdbxWriter:
     """Write PDBx data files or dictionaries.
     Use the input container or container list.
     """
+
     def __init__(self, output_file=stdout):
         self.__output_file = output_file
         self.__container_list = []
@@ -78,8 +79,9 @@ class PdbxWriter:
                 self.__write_table_format(obj)
             else:
                 raise PdbxError(
-                    "len(object_list) = %d and len(obj.attribute_list) = %d" %
-                    (len(object_list), len(obj.attribute_list)))
+                    "len(object_list) = %d and len(obj.attribute_list) = %d"
+                    % (len(object_list), len(obj.attribute_list))
+                )
             if self._do_definition_indent:
                 self.__write(indent_string + "#")
             else:
@@ -99,10 +101,11 @@ class PdbxWriter:
         attribute_name_max_length = 0
         for attribute_name in category.attribute_list:
             attribute_name_max_length = max(
-                attribute_name_max_length, len(attribute_name))
+                attribute_name_max_length, len(attribute_name)
+            )
         item_name_max_length = (
-            self.__spacing + len(category.name)
-            + attribute_name_max_length + 2)
+            self.__spacing + len(category.name) + attribute_name_max_length + 2
+        )
         line_list = []
         line_list.append("#\n")
         for attribute_name, _ in category.attribute_list_with_order:
@@ -119,12 +122,12 @@ class PdbxWriter:
         """Write table format data."""
         # Write the declaration of the loop_
         line_list = []
-        line_list.append('#\n')
+        line_list.append("#\n")
         if self._do_definition_indent:
             line_list.append(self.__indent_space)
         line_list.append("loop_")
         for attribute_name in category.attribute_list:
-            line_list.append('\n')
+            line_list.append("\n")
             if self._do_definition_indent:
                 line_list.append(self.__indent_space)
             item_name = "_%s.%s" % (category.name, attribute_name)
@@ -137,23 +140,25 @@ class PdbxWriter:
         else:
             num_steps = 1
         format_type_list, _ = category.get_format_type_list(steps=num_steps)
-        max_length_list = category.get_max_attribute_list_length(steps=num_steps)
+        max_length_list = category.get_max_attribute_list_length(
+            steps=num_steps
+        )
         spacing = " " * self.__spacing
         for irow in range(category.row_count):
             line_list = []
-            line_list.append('\n')
+            line_list.append("\n")
             if self._do_definition_indent:
                 line_list.append(self.__indent_space + " ")
             for iattr in range(category.attribute_count):
                 format_type = format_type_list[iattr]
                 max_length = max_length_list[iattr]
-                if format_type in ('FT_UNQUOTED_STRING', 'FT_NULL_VALUE'):
+                if format_type in ("FT_UNQUOTED_STRING", "FT_NULL_VALUE"):
                     val = category.get_value_formatted_by_index(iattr, irow)
                     line_list.append(val.ljust(max_length))
-                elif format_type == 'FT_NUMBER':
+                elif format_type == "FT_NUMBER":
                     val = category.get_value_formatted_by_index(iattr, irow)
                     line_list.append(val.rjust(max_length))
-                elif format_type == 'FT_QUOTED_STRING':
+                elif format_type == "FT_QUOTED_STRING":
                     val = category.get_value_formatted_by_index(iattr, irow)
                     line_list.append(val.ljust(max_length + 2))
                 elif format_type == "FT_MULTI_LINE_STRING":
