@@ -69,7 +69,7 @@ class CifName:
         if i == -1:
             return None
         else:
-            return name[i + 1 :] # noqa : E203
+            return name[i + 1 :]  # noqa : E203
 
 
 class ContainerBase:
