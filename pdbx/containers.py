@@ -467,7 +467,6 @@ class DataCategory(DataCategoryBase):
             self._attribute_name_list.append(attribute_name)
             self._catalog[attribute_name_lower] = attribute_name
             # add a placeholder to any existing rows for the new attribute.
-            # if len(self._row_list) > 0:
             for row in self._row_list:
                 row.append("?")
         self._num_attributes = len(self._attribute_name_list)
