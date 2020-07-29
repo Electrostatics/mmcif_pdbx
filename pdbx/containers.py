@@ -371,7 +371,6 @@ class DataCategory(DataCategoryBase):
     def remove_row(self, index):
         """Remove specified row."""
         try:
-            # if ((index >= 0) and (index < len(self._row_list))):
             if index >= 0 and self._row_list:
                 del self._row_list[index]
                 if self.__current_row_index >= len(self._row_list):
