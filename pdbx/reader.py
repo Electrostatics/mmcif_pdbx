@@ -17,12 +17,13 @@ The tokenizer used in this module is modeled after the clever parser design
 used in the PyMMLIB package.
 
 PyMMLib Development Group
-Authors: Ethan Merritt: merritt@u.washington.ed & Jay Painter: jay.painter@gmail.com
+Authors: Ethan Merritt: merritt@u.washington.edu
+         Jay Painter: jay.painter@gmail.com
 See: http://pymmlib.sourceforge.net/
 """
 import re
 from .containers import DataCategory, DefinitionContainer, DataContainer
-from .errors import PdbxSyntaxError, PdbxError
+from .errors import PdbxSyntaxError
 
 
 class PdbxReader:
@@ -37,7 +38,7 @@ class PdbxReader:
             "loop": "ST_TABLE",
             "global": "ST_GLOBAL_CONTAINER",
             "save": "ST_DEFINITION",
-            "stop": "ST_STOP"
+            "stop": "ST_STOP",
         }
 
     def read(self, container_list):
@@ -95,8 +96,12 @@ class PdbxReader:
         state = None
 
         # Find the first reserved word and begin capturing data.
-        for (current_category_name, current_attribute_name,
-             current_quoted_string, current_word) in tokenizer:
+        for (
+            current_category_name,
+            current_attribute_name,
+            current_quoted_string,
+            current_word,
+        ) in tokenizer:
             if current_word is None:
                 continue
             reserved_word, state = self.__get_state(current_word)
@@ -126,13 +131,15 @@ class PdbxReader:
                     # A new category is encountered - create a container and
                     # add a row
                     category_index[current_category_name] = DataCategory(
-                        current_category_name)
+                        current_category_name
+                    )
                     current_category = category_index[current_category_name]
                     try:
                         current_container.append(current_category)
                     except AttributeError:
                         self.__syntax_error(
-                            "Category cannot be added to data_ block")
+                            "Category cannot be added to data_ block"
+                        )
                         return
                     current_row = []
                     current_category.append(current_row)
@@ -142,42 +149,51 @@ class PdbxReader:
                         current_row = current_category[0]
                     except IndexError:
                         self.__syntax_error(
-                            "Internal index error accessing category data")
+                            "Internal index error accessing category data"
+                        )
                         return
                 # Check for duplicate attributes and add attribute to table.
                 if current_attribute_name in current_category.attribute_list:
                     self.__syntax_error(
-                        "Duplicate attribute encountered in category")
+                        "Duplicate attribute encountered in category"
+                    )
                     return
                 else:
                     current_category.append_attribute(current_attribute_name)
                 # Get the data for this attribute from the next token
                 tok_category, _, current_quoted_string, current_word = next(
-                    tokenizer)
-                if (tok_category is not None or (
-                        current_quoted_string is None
-                        and current_word is None)):
+                    tokenizer
+                )
+                if tok_category is not None or (
+                    current_quoted_string is None and current_word is None
+                ):
                     self.__syntax_error(
-                        "Missing data for item _%s.%s" % (
-                            current_category_name, current_attribute_name))
-                if current_word == '?':
+                        "Missing data for item _%s.%s"
+                        % (current_category_name, current_attribute_name)
+                    )
+                if current_word == "?":
                     current_row.append(None)
-                elif current_word == '.':
-                    current_row.append('')
+                elif current_word == ".":
+                    current_row.append("")
                 elif current_word is not None:
                     # Validation check token for misplaced reserved words
                     reserved_word, state = self.__get_state(current_word)
                     if reserved_word is not None:
                         self.__syntax_error(
-                            "Unexpected reserved word: %s" % (reserved_word))
+                            "Unexpected reserved word: %s" % (reserved_word)
+                        )
                     current_row.append(current_word)
                 elif current_quoted_string is not None:
                     current_row.append(current_quoted_string)
                 else:
                     self.__syntax_error("Missing value in item-value pair")
                 try:
-                    current_category_name, current_attribute_name, \
-                        current_quoted_string, current_word = next(tokenizer)
+                    (
+                        current_category_name,
+                        current_attribute_name,
+                        current_quoted_string,
+                        current_word,
+                    ) = next(tokenizer)
                 except StopIteration:
                     return
                 continue
@@ -187,17 +203,24 @@ class PdbxReader:
                 # The category name in the next current_category_name,
                 # current_attribute_name pair defines the name of the category
                 # container.
-                current_category_name, current_attribute_name, \
-                    current_quoted_string, current_word = next(tokenizer)
+                (
+                    current_category_name,
+                    current_attribute_name,
+                    current_quoted_string,
+                    current_word,
+                ) = next(tokenizer)
                 if (current_category_name is None) or (
-                        current_attribute_name is None):
+                    current_attribute_name is None
+                ):
                     self.__syntax_error(
-                        "Unexpected token in loop_ declaration")
+                        "Unexpected token in loop_ declaration"
+                    )
                     return
                 # Check for a previous category declaration.
                 if current_category_name in category_index:
                     self.__syntax_error(
-                        "Duplicate category declaration in loop_")
+                        "Duplicate category declaration in loop_"
+                    )
                     return
                 current_category = DataCategory(current_category_name)
                 try:
@@ -205,17 +228,23 @@ class PdbxReader:
                 except AttributeError:
                     self.__syntax_error(
                         "loop_ declaration outside of data_ block or save_ "
-                        "frame")
+                        "frame"
+                    )
                     return
                 current_category.append_attribute(current_attribute_name)
                 # Read the rest of the loop_ declaration
-                for (current_category_name, current_attribute_name,
-                     current_quoted_string, current_word) in tokenizer:
+                for (
+                    current_category_name,
+                    current_attribute_name,
+                    current_quoted_string,
+                    current_word,
+                ) in tokenizer:
                     if current_category_name is None:
                         break
                     if current_category_name != current_category.name:
                         self.__syntax_error(
-                            "Changed category name in loop_ declaration")
+                            "Changed category name in loop_ declaration"
+                        )
                         return
                     current_category.append_attribute(current_attribute_name)
                 else:
@@ -231,24 +260,28 @@ class PdbxReader:
                         else:
                             self.__syntax_error(
                                 "Unexpected reserved word after loop "
-                                "declaration: %s" % (reserved_word))
+                                "declaration: %s" % (reserved_word)
+                            )
                 # Read the table of data for this loop_
                 while True:
                     current_row = []
                     current_category.append(current_row)
                     for _ in current_category.attribute_list:
-                        if current_word == '?':
+                        if current_word == "?":
                             current_row.append(None)
-                        elif current_word == '.':
-                            current_row.append('')
+                        elif current_word == ".":
+                            current_row.append("")
                         elif current_word is not None:
                             current_row.append(current_word)
                         elif current_quoted_string is not None:
                             current_row.append(current_quoted_string)
                         try:
-                            current_category_name, current_attribute_name, \
-                                current_quoted_string, current_word = next(
-                                    tokenizer)
+                            (
+                                current_category_name,
+                                current_attribute_name,
+                                current_quoted_string,
+                                current_word,
+                            ) = next(tokenizer)
                         except StopIteration:
                             return
                     # loop_ data processing ends if a new _category.attribute
@@ -288,14 +321,19 @@ class PdbxReader:
                 current_category = None
             elif state == "ST_UNKNOWN":
                 self.__syntax_error(
-                    "Unrecognized syntax element: " + str(current_word))
+                    "Unrecognized syntax element: " + str(current_word)
+                )
                 return
             else:
                 assert False, f"unhandled state {state}"
 
             try:
-                current_category_name, current_attribute_name, \
-                    current_quoted_string, current_word = next(tokenizer)
+                (
+                    current_category_name,
+                    current_attribute_name,
+                    current_quoted_string,
+                    current_word,
+                ) = next(tokenizer)
             except StopIteration:
                 return
 
@@ -313,11 +351,15 @@ class PdbxReader:
         # handled outside of this regex.
         mmcif_re = re.compile(
             r"(?:"
-            r"(?:_(.+?)[.](\S+))" "|"  # _category.attribute
-            r"(?:['](.*?)(?:[']\s|[']$))" "|"  # single quoted strings
-            r"(?:[\"](.*?)(?:[\"]\s|[\"]$))" "|"  # double quoted strings
-            r"(?:\s*#.*$)" "|"  # comments (dumped)
-            r"(\S+)" # unquoted words
+            r"(?:_(.+?)[.](\S+))"
+            "|"  # _category.attribute
+            r"(?:['](.*?)(?:[']\s|[']$))"
+            "|"  # single quoted strings
+            r"(?:[\"](.*?)(?:[\"]\s|[\"]$))"
+            "|"  # double quoted strings
+            r"(?:\s*#.*$)"
+            "|"  # comments (dumped)
+            r"(\S+)"  # unquoted words
             r")"
         )
         file_iterator = iter(input_file)
@@ -356,8 +398,11 @@ class PdbxReader:
                     else:
                         quoted_string = None
                     groups = (
-                        match_groups[0], match_groups[1], quoted_string,
-                        match_groups[4])
+                        match_groups[0],
+                        match_groups[1],
+                        quoted_string,
+                        match_groups[4],
+                    )
                     yield groups
 
     def __tokenizer_org(self, input_file):
@@ -372,9 +417,12 @@ class PdbxReader:
         # handled outside of this regex.
         mmcif_re = re.compile(
             r"(?:"
-            r"(?:_(.+?)[.](\S+))" "|" # _category.attribute
-            r"(?:['\"](.*?)(?:['\"]\s|['\"]$))" "|" # quoted strings
-            r"(?:\s*#.*$)" "|"  # comments (dumped)
+            r"(?:_(.+?)[.](\S+))"
+            "|"  # _category.attribute
+            r"(?:['\"](.*?)(?:['\"]\s|['\"]$))"
+            "|"  # quoted strings
+            r"(?:\s*#.*$)"
+            "|"  # comments (dumped)
             r"(\S+)"  # unquoted words
             r")"
         )

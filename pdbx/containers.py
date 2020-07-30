@@ -46,6 +46,7 @@ __email__ = "jwest@rcsb.rutgers.edu"
 
 class CifName:
     """Class of utilities for CIF-style data names."""
+
     @staticmethod
     def category_part(name):
         """Get the category part of the name."""
@@ -68,11 +69,12 @@ class CifName:
         if i == -1:
             return None
         else:
-            return name[i + 1:]
+            return name[i + 1 :]  # noqa : E203
 
 
 class ContainerBase:
     """Container base class for data and definition objects."""
+
     def __init__(self, name):
         # The enclosing scope of the data container (e.g. data_/save_)
         self.__name = name
@@ -124,20 +126,19 @@ class ContainerBase:
 
     def replace(self, obj):
         """Replace an existing object with the input object."""
-        if (obj.name is not None) and (
-                obj.name in self.__object_catalog):
+        if (obj.name is not None) and (obj.name in self.__object_catalog):
             self.__object_catalog[obj.name] = obj
 
     def print_it(self, file_=stdout, type_="brief"):
         """Dump information about container to specified file object."""
         file_.write(
-            "+ %s container: %30s contains %4d categories\n" % (
-                self.get_type(), self.name,
-                len(self.__object_name_list)))
+            "+ %s container: %30s contains %4d categories\n"
+            % (self.get_type(), self.name, len(self.__object_name_list))
+        )
         for name in self.__object_name_list:
             file_.write("--------------------------------------------\n")
             file_.write("Data category: %s\n" % name)
-            if type_ == 'brief':
+            if type_ == "brief":
                 self.__object_catalog[name].print_it(file_)
             else:
                 self.__object_catalog[name].dump_it(file_)
@@ -148,7 +149,8 @@ class ContainerBase:
             i = self.__object_name_list.index(current_name)
             self.__object_name_list[i] = new_name
             self.__object_catalog[new_name] = self.__object_catalog[
-                current_name]
+                current_name
+            ]
             self.__object_catalog[new_name].set_name(new_name)
             return True
         except KeyError:
@@ -175,24 +177,26 @@ class DefinitionContainer(ContainerBase):
 
     def __init__(self, name):
         super(DefinitionContainer, self).__init__(name)
-        self.set_type('definition')
+        self.set_type("definition")
 
     def is_category(self):
         """Determine if container contains category objects."""
-        if self.exists('category'):
+        if self.exists("category"):
             return True
         return False
 
     def is_attribute(self):
         """Determine if container contains item objects."""
-        if self.exists('item'):
+        if self.exists("item"):
             return True
         return False
 
     def print_it(self, fh=stdout, type_="brief"):
         """Print information about container to file object."""
-        fh.write("Definition container: %30s contains %4d categories\n" %
-                 (self.name, len(self.get_object_name_list())))
+        fh.write(
+            "Definition container: %30s contains %4d categories\n"
+            % (self.name, len(self.get_object_name_list()))
+        )
         if self.is_category():
             fh.write("Definition type: category\n")
         elif self.is_attribute():
@@ -203,7 +207,7 @@ class DefinitionContainer(ContainerBase):
         for name in self.get_object_name_list():
             fh.write("--------------------------------------------\n")
             fh.write("Definition category: %s\n" % name)
-            if type_ == 'brief':
+            if type_ == "brief":
                 self.get_object(name).print_it(fh)
             else:
                 self.get_object(name).dumpId(fh)
@@ -214,7 +218,7 @@ class DataContainer(ContainerBase):
 
     def __init__(self, name):
         super(DataContainer, self).__init__(name)
-        self.set_type('data')
+        self.set_type("data")
         self.__global_flag = False
         self.__current_row = None
 
@@ -292,18 +296,30 @@ class DataCategory(DataCategoryBase):
         self.__whitespace_single_quote_re = re.compile(r"('\s)|(\s')")
         self.__double_quote_re = re.compile(r'["]')
         self.__whitespace_double_quote_re = re.compile(r'("\s)|(\s")')
-        self.__integer_re = re.compile(r'^[0-9]+$')
+        self.__integer_re = re.compile(r"^[0-9]+$")
         self.__float_re = re.compile(
-            r'^-?(([0-9]+)[.]?|([0-9]*[.][0-9]+))([(][0-9]+[)])?([eE][+-]?[0-9]+)?$')
+            r"^-?(([0-9]+)[.]?|([0-9]*[.][0-9]+))"
+            r"([(][0-9]+[)])?([eE][+-]?[0-9]+)?$"
+        )
         self.__data_type_list = [
-            'DT_NULL_VALUE', 'DT_INTEGER', 'DT_FLOAT', 'DT_UNQUOTED_STRING',
-            'DT_ITEM_NAME', 'DT_DOUBLE_QUOTED_STRING',
-            'DT_SINGLE_QUOTED_STRING', 'DT_MULTI_LINE_STRING',
+            "DT_NULL_VALUE",
+            "DT_INTEGER",
+            "DT_FLOAT",
+            "DT_UNQUOTED_STRING",
+            "DT_ITEM_NAME",
+            "DT_DOUBLE_QUOTED_STRING",
+            "DT_SINGLE_QUOTED_STRING",
+            "DT_MULTI_LINE_STRING",
         ]
         self.__format_type_list = [
-            'FT_NULL_VALUE', 'FT_NUMBER', 'FT_NUMBER', 'FT_UNQUOTED_STRING',
-            'FT_QUOTED_STRING', 'FT_QUOTED_STRING', 'FT_QUOTED_STRING',
-            'FT_MULTI_LINE_STRING'
+            "FT_NULL_VALUE",
+            "FT_NUMBER",
+            "FT_NUMBER",
+            "FT_UNQUOTED_STRING",
+            "FT_QUOTED_STRING",
+            "FT_QUOTED_STRING",
+            "FT_QUOTED_STRING",
+            "FT_MULTI_LINE_STRING",
         ]
 
     def __getitem__(self, item):
@@ -355,8 +371,7 @@ class DataCategory(DataCategoryBase):
     def remove_row(self, index):
         """Remove specified row."""
         try:
-            #if ((index >= 0) and (index < len(self._row_list))):
-            if (index >= 0 and self._row_list):
+            if index >= 0 and self._row_list:
                 del self._row_list[index]
                 if self.__current_row_index >= len(self._row_list):
                     self.__current_row_index = len(self._row_list) - 1
@@ -371,11 +386,12 @@ class DataCategory(DataCategoryBase):
         """Return a full row based on the length of the the attribute list."""
         try:
             if len(self._row_list[index]) < self._num_attributes:
-                self._row_list[index] += ['?'] * (
-                    self._num_attributes - len(self._row_list[index]))
+                self._row_list[index] += ["?"] * (
+                    self._num_attributes - len(self._row_list[index])
+                )
             return self._row_list[index]
         except IndexError:
-            return ['?'] * len(self._num_attributes)
+            return ["?"] * len(self._num_attributes)
 
     @property
     def name(self):
@@ -426,7 +442,8 @@ class DataCategory(DataCategoryBase):
         attribute_name_lower = attribute_name.lower()
         if attribute_name_lower in self._catalog:
             index = self._attribute_name_list.index(
-                self._catalog[attribute_name_lower])
+                self._catalog[attribute_name_lower]
+            )
             self._attribute_name_list[index] = attribute_name
             self._catalog[attribute_name_lower] = attribute_name
         else:
@@ -439,16 +456,17 @@ class DataCategory(DataCategoryBase):
         attribute_name_lower = attribute_name.lower()
         if attribute_name_lower in self._catalog:
             index = self._attribute_name_list.index(
-                self._catalog[attribute_name_lower])
+                self._catalog[attribute_name_lower]
+            )
             self._attribute_name_list[index] = attribute_name
             self._catalog[attribute_name_lower] = attribute_name
             self.__lfh.write(
-                "Appending existing attribute %s\n" % attribute_name)
+                "Appending existing attribute %s\n" % attribute_name
+            )
         else:
             self._attribute_name_list.append(attribute_name)
             self._catalog[attribute_name_lower] = attribute_name
             # add a placeholder to any existing rows for the new attribute.
-            #if len(self._row_list) > 0:
             for row in self._row_list:
                 row.append("?")
         self._num_attributes = len(self._attribute_name_list)
@@ -465,7 +483,8 @@ class DataCategory(DataCategoryBase):
             index = row_index
         if isinstance(attribute, str) and isinstance(index, int):
             return self._row_list[index][
-                self._attribute_name_list.index(attribute)]
+                self._attribute_name_list.index(attribute)
+            ]
         raise IndexError(attribute)
 
     def set_value(self, value, attribute_name=None, row_index=None):
@@ -488,19 +507,22 @@ class DataCategory(DataCategoryBase):
                 # extend the list if needed
                 if ind >= row_len:
                     self._row_list[index].extend(
-                        [None for _ in range(2 * ind - row_len)])
+                        [None for _ in range(2 * ind - row_len)]
+                    )
                 self._row_list[index][ind] = value
             except IndexError:
                 self.__lfh.write(
                     "DataCategory(setvalue) index error category"
-                    " %s attribute %s index %d value %r\n" %
-                    (self._name, attribute, index, value))
+                    " %s attribute %s index %d value %r\n"
+                    % (self._name, attribute, index, value)
+                )
                 traceback.print_exc(file=self.__lfh)
             except ValueError:
                 self.__lfh.write(
                     "DataCategory(setvalue) value error category"
-                    " %s attribute %s index %d value %r\n" %
-                    (self._name, attribute, index, value))
+                    " %s attribute %s index %d value %r\n"
+                    % (self._name, attribute, index, value)
+                )
                 traceback.print_exc(file=self.__lfh)
 
     @property
@@ -583,8 +605,9 @@ class DataCategory(DataCategoryBase):
         """Print container information."""
         file_.write("--------------------------------------------\n")
         file_.write(
-            " Category: %s attribute list length: %d\n" %
-            (self._name, len(self._attribute_name_list)))
+            " Category: %s attribute list length: %d\n"
+            % (self._name, len(self._attribute_name_list))
+        )
         for attr in self._attribute_name_list:
             file_.write(" Category: %s attribute: %s\n" % (self._name, attr))
 
@@ -592,135 +615,154 @@ class DataCategory(DataCategoryBase):
         for row in self._row_list[:2]:
             if len(row) == len(self._attribute_name_list):
                 for index, value in enumerate(row):
-                    file_.write(" %30s: %s ...\n" % (
-                        self._attribute_name_list[index], str(value)[:30]))
+                    file_.write(
+                        " %30s: %s ...\n"
+                        % (self._attribute_name_list[index], str(value)[:30])
+                    )
             else:
                 file_.write(
                     "+WARNING - %s data length %d attribute name length %s "
-                    "mismatched\n" % (
-                        self._name, len(row),
-                        len(self._attribute_name_list)))
+                    "mismatched\n"
+                    % (self._name, len(row), len(self._attribute_name_list))
+                )
 
     def dump_it(self, file_=stdout):
         """Dump contents of container."""
         file_.write("--------------------------------------------\n")
         file_.write(
-            " Category: %s attribute list length: %d\n" %
-            (self._name, len(self._attribute_name_list)))
+            " Category: %s attribute list length: %d\n"
+            % (self._name, len(self._attribute_name_list))
+        )
         for attr in self._attribute_name_list:
             file_.write(" Category: %s attribute: %s\n" % (self._name, attr))
 
         file_.write(" Value list length: %d\n" % len(self._row_list))
         for row in self._row_list:
             for index, value in enumerate(row):
-                file_.write(" %30s: %s\n" % (
-                    self._attribute_name_list[index], value))
+                file_.write(
+                    " %30s: %s\n" % (self._attribute_name_list[index], value)
+                )
 
     def __format_pdbx(self, inp):
         """Format input data following PDBx quoting rules."""
         try:
             if inp is None:
-                return ("?", 'DT_NULL_VALUE')
+                return ("?", "DT_NULL_VALUE")
             # pure numerical values are returned as unquoted strings
-            if (isinstance(inp, int) or self.__integer_re.search(str(inp))):
-                return ([str(inp)], 'DT_INTEGER')
-            if (isinstance(inp, float) or self.__float_re.search(str(inp))):
-                return ([str(inp)], 'DT_FLOAT')
+            if isinstance(inp, int) or self.__integer_re.search(str(inp)):
+                return ([str(inp)], "DT_INTEGER")
+            if isinstance(inp, float) or self.__float_re.search(str(inp)):
+                return ([str(inp)], "DT_FLOAT")
             # null value handling
             if inp in (".", "?"):
-                return (self.__double_quoted_list(inp),
-                        'DT_DOUBLE_QUOTED_STRING')
+                return (
+                    self.__double_quoted_list(inp),
+                    "DT_DOUBLE_QUOTED_STRING",
+                )
             if inp == "":
-                return (["."], 'DT_NULL_VALUE')
+                return (["."], "DT_NULL_VALUE")
             # Contains white space or quotes ?
             if not self.__whitespace_quotes_re.search(inp):
                 if inp.startswith("_"):
-                    return (self.__double_quoted_list(inp), 'DT_ITEM_NAME')
+                    return (self.__double_quoted_list(inp), "DT_ITEM_NAME")
                 else:
-                    return ([str(inp)], 'DT_UNQUOTED_STRING')
+                    return ([str(inp)], "DT_UNQUOTED_STRING")
             else:
                 if self.__newline_re.search(inp):
                     return (
                         self.__semicolon_quoted_list(inp),
-                        'DT_MULTI_LINE_STRING')
+                        "DT_MULTI_LINE_STRING",
+                    )
                 else:
                     if self.__avoid_embedded_quoting:
-                        # change priority to choose double quoting where possible.
-                        if (
-                                not self.__double_quote_re.search(inp) and not
-                                self.__whitespace_single_quote_re.search(inp)):
+                        # change priority to choose double quoting where
+                        # possible.
+                        if not self.__double_quote_re.search(
+                            inp
+                        ) and not self.__whitespace_single_quote_re.search(
+                            inp
+                        ):
                             return (
                                 self.__double_quoted_list(inp),
-                                'DT_DOUBLE_QUOTED_STRING')
-                        elif (
-                                not self.__single_quote_re.search(inp) and not
-                                self.__whitespace_double_quote_re.search(inp)):
+                                "DT_DOUBLE_QUOTED_STRING",
+                            )
+                        elif not self.__single_quote_re.search(
+                            inp
+                        ) and not self.__whitespace_double_quote_re.search(
+                            inp
+                        ):
                             return (
                                 self.__single_quoted_list(inp),
-                                'DT_SINGLE_QUOTED_STRING')
+                                "DT_SINGLE_QUOTED_STRING",
+                            )
                         else:
                             return (
                                 self.__semicolon_quoted_list(inp),
-                                'DT_MULTI_LINE_STRING')
+                                "DT_MULTI_LINE_STRING",
+                            )
                     else:
-                        # change priority to choose double quoting where possible.
+                        # change priority to choose double quoting where
+                        # possible.
                         if not self.__double_quote_re.search(inp):
                             return (
                                 self.__double_quoted_list(inp),
-                                'DT_DOUBLE_QUOTED_STRING')
+                                "DT_DOUBLE_QUOTED_STRING",
+                            )
                         elif not self.__single_quote_re.search(inp):
                             return (
                                 self.__single_quoted_list(inp),
-                                'DT_SINGLE_QUOTED_STRING')
+                                "DT_SINGLE_QUOTED_STRING",
+                            )
                         else:
                             return (
                                 self.__semicolon_quoted_list(inp),
-                                'DT_MULTI_LINE_STRING')
+                                "DT_MULTI_LINE_STRING",
+                            )
         except ValueError:
             traceback.print_exc(file=self.__lfh)
 
     def __data_type_pdbx(self, inp):
         """Detect the PDBx data type."""
         if inp is None:
-            return 'DT_NULL_VALUE'
+            return "DT_NULL_VALUE"
         # pure numerical values are returned as unquoted strings
         if isinstance(inp, int) or self.__integer_re.search(str(inp)):
-            return 'DT_INTEGER'
+            return "DT_INTEGER"
         if isinstance(inp, float) or self.__float_re.search(str(inp)):
-            return 'DT_FLOAT'
+            return "DT_FLOAT"
         # null value handling
         if inp in (".", "?"):
-            return 'DT_DOUBLE_QUOTED_STRING'
+            return "DT_DOUBLE_QUOTED_STRING"
         if inp == "":
-            return 'DT_NULL_VALUE'
+            return "DT_NULL_VALUE"
         # Contains white space or quotes ?
         if not self.__whitespace_quotes_re.search(inp):
             if inp.startswith("_"):
-                return 'DT_ITEM_NAME'
+                return "DT_ITEM_NAME"
             else:
-                return 'DT_UNQUOTED_STRING'
+                return "DT_UNQUOTED_STRING"
         else:
             if self.__newline_re.search(inp):
-                return 'DT_MULTI_LINE_STRING'
+                return "DT_MULTI_LINE_STRING"
             else:
                 if self.__avoid_embedded_quoting:
-                    if (
-                            not self.__single_quote_re.search(inp) and not
-                            self.__whitespace_double_quote_re.search(inp)):
-                        return 'DT_DOUBLE_QUOTED_STRING'
-                    elif (
-                            not self.__double_quote_re.search(inp) and not
-                            self.__whitespace_single_quote_re.search(inp)):
-                        return 'DT_SINGLE_QUOTED_STRING'
+                    if not self.__single_quote_re.search(
+                        inp
+                    ) and not self.__whitespace_double_quote_re.search(inp):
+                        return "DT_DOUBLE_QUOTED_STRING"
+                    elif not self.__double_quote_re.search(
+                        inp
+                    ) and not self.__whitespace_single_quote_re.search(inp):
+                        return "DT_SINGLE_QUOTED_STRING"
                     else:
-                        return 'DT_MULTI_LINE_STRING'
+                        return "DT_MULTI_LINE_STRING"
                 else:
                     if not self.__single_quote_re.search(inp):
-                        return 'DT_DOUBLE_QUOTED_STRING'
+                        return "DT_DOUBLE_QUOTED_STRING"
                     elif not self.__double_quote_re.search(inp):
-                        return 'DT_SINGLE_QUOTED_STRING'
+                        return "DT_SINGLE_QUOTED_STRING"
                     else:
-                        return 'DT_MULTI_LINE_STRING'
+                        return "DT_MULTI_LINE_STRING"
 
     @staticmethod
     def __single_quoted_list(inp):
@@ -735,7 +777,7 @@ class DataCategory(DataCategoryBase):
     @staticmethod
     def __semicolon_quoted_list(inp):
         """Generate a semicolon-delimited quoted list from the input."""
-        if inp[-1] == '\n':
+        if inp[-1] == "\n":
             return ["\n", ";"] + [inp] + [";", "\n"]
         else:
             return ["\n", ";"] + [inp] + ["\n", ";", "\n"]
@@ -754,19 +796,23 @@ class DataCategory(DataCategoryBase):
             try:
                 list_, _ = self.__format_pdbx(
                     self._row_list[index][
-                        self._attribute_name_list.index(attribute)])
+                        self._attribute_name_list.index(attribute)
+                    ]
+                )
                 return "".join(list_)
             except IndexError:
                 self.__lfh.write(
-                    "attribute_name %s index %r rowdata %r\n" %
-                    (attribute_name, index, self._row_list[index]))
+                    "attribute_name %s index %r rowdata %r\n"
+                    % (attribute_name, index, self._row_list[index])
+                )
                 raise IndexError
         raise TypeError(attribute)
 
     def get_value_formatted_by_index(self, attribute_index, row_index):
         """Get value formatted by index."""
         list_, _ = self.__format_pdbx(
-            self._row_list[row_index][attribute_index])
+            self._row_list[row_index][attribute_index]
+        )
         return "".join(list_)
 
     def get_max_attribute_list_length(self, steps=1):
@@ -780,18 +826,19 @@ class DataCategory(DataCategoryBase):
     def get_format_type_list(self, steps=1):
         """Get a formatted type list."""
         try:
-            current_data_type_list = ['DT_NULL_VALUE'] * len(
-                self._attribute_name_list)
+            current_data_type_list = ["DT_NULL_VALUE"] * len(
+                self._attribute_name_list
+            )
             for row in self._row_list[::steps]:
                 for index, value in enumerate(self._attribute_name_list):
                     data_type = self.__data_type_pdbx(value)
                     data_index = self.__data_type_list.index(data_type)
                     current_type = current_data_type_list[index]
-                    current_index = self.__data_type_list.index(
-                        current_type)
+                    current_index = self.__data_type_list.index(current_type)
                     current_index = max(current_index, data_index)
                     current_data_type_list[index] = self.__data_type_list[
-                        current_index]
+                        current_index
+                    ]
             # Map the format types to the data types
             current_format_type_list = []
             for data_type in current_data_type_list:
@@ -800,15 +847,16 @@ class DataCategory(DataCategoryBase):
         except IndexError:
             self.__lfh.write(
                 "PdbxDataCategory(get_format_type_list) ++Index error at "
-                "index %d in row %r\n" %
-                (index, row))
+                "index %d in row %r\n" % (index, row)
+            )
         return current_format_type_list, current_data_type_list
 
     @property
     def get_format_type_list_x(self):
         """Alternate version of format type list."""
-        current_data_type_list = ['DT_NULL_VALUE'] * len(
-            self._attribute_name_list)
+        current_data_type_list = ["DT_NULL_VALUE"] * len(
+            self._attribute_name_list
+        )
         for _ in self._row_list:
             for index, value in enumerate(self._attribute_name_list):
                 data_type = self.__data_type_pdbx(value)
@@ -817,7 +865,8 @@ class DataCategory(DataCategoryBase):
                 current_index = self.__data_type_list.index(current_type)
                 current_index = max(current_index, data_index)
                 current_data_type_list[index] = self.__data_type_list[
-                    current_index]
+                    current_index
+                ]
         # Map the format types to the data types
         current_format_type_list = []
         for data_type in current_data_type_list:
