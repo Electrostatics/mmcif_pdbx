@@ -1,14 +1,13 @@
 """Python packaging for PDBx/mmCIF utilities."""
 import setuptools
-
+import versioneer
 
 with open("README.md", "r") as fh:
     LONG_DESCRIPTION = fh.read()
 
-
 setuptools.setup(
     name="mmcif_pdbx",
-    version="1.1.1",
+    version=versioneer.get_version(),
     author="John Westbrook",
     author_email="jwest@rcsb.rutgers.edu",
     maintainer="Nathan Baker",
@@ -31,6 +30,7 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Chemistry",
     ],
     python_requires=">=3.6",
+    tests_require=["pytest"],
     test_suite="tests",
     zip_safe=True,
 )
