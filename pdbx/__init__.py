@@ -12,6 +12,10 @@ about this package, including examples.
 # import pdbx.reader
 from .errors import PdbxSyntaxError, PdbxError  # noqa: F401
 from .containers import DataCategory, DataContainer  # noqa: F401
+from ._version import get_versions
+
+__version__ = get_versions()["version"]
+del get_versions
 
 
 def load(fp) -> list:
