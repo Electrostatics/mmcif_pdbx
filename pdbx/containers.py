@@ -148,7 +148,9 @@ class ContainerBase:
         try:
             i = self.__object_name_list.index(current_name)
             self.__object_name_list[i] = new_name
-            self.__object_catalog[new_name] = self.__object_catalog[current_name]
+            self.__object_catalog[new_name] = self.__object_catalog[
+                current_name
+            ]
             self.__object_catalog[new_name].set_name(new_name)
             return True
         except KeyError:
@@ -296,7 +298,8 @@ class DataCategory(DataCategoryBase):
         self.__whitespace_double_quote_re = re.compile(r'("\s)|(\s")')
         self.__integer_re = re.compile(r"^[0-9]+$")
         self.__float_re = re.compile(
-            r"^-?(([0-9]+)[.]?|([0-9]*[.][0-9]+))" r"([(][0-9]+[)])?([eE][+-]?[0-9]+)?$"
+            r"^-?(([0-9]+)[.]?|([0-9]*[.][0-9]+))"
+            r"([(][0-9]+[)])?([eE][+-]?[0-9]+)?$"
         )
         self.__data_type_list = [
             "DT_NULL_VALUE",
@@ -438,7 +441,9 @@ class DataCategory(DataCategoryBase):
         """Add attribute to container."""
         attribute_name_lower = attribute_name.lower()
         if attribute_name_lower in self._catalog:
-            index = self._attribute_name_list.index(self._catalog[attribute_name_lower])
+            index = self._attribute_name_list.index(
+                self._catalog[attribute_name_lower]
+            )
             self._attribute_name_list[index] = attribute_name
             self._catalog[attribute_name_lower] = attribute_name
         else:
@@ -450,10 +455,14 @@ class DataCategory(DataCategoryBase):
         """Append attribute and extend rows."""
         attribute_name_lower = attribute_name.lower()
         if attribute_name_lower in self._catalog:
-            index = self._attribute_name_list.index(self._catalog[attribute_name_lower])
+            index = self._attribute_name_list.index(
+                self._catalog[attribute_name_lower]
+            )
             self._attribute_name_list[index] = attribute_name
             self._catalog[attribute_name_lower] = attribute_name
-            self.__lfh.write("Appending existing attribute %s\n" % attribute_name)
+            self.__lfh.write(
+                "Appending existing attribute %s\n" % attribute_name
+            )
         else:
             self._attribute_name_list.append(attribute_name)
             self._catalog[attribute_name_lower] = attribute_name
@@ -473,7 +482,9 @@ class DataCategory(DataCategoryBase):
         else:
             index = row_index
         if isinstance(attribute, str) and isinstance(index, int):
-            return self._row_list[index][self._attribute_name_list.index(attribute)]
+            return self._row_list[index][
+                self._attribute_name_list.index(attribute)
+            ]
         raise IndexError(attribute)
 
     def set_value(self, value, attribute_name=None, row_index=None):
@@ -628,7 +639,9 @@ class DataCategory(DataCategoryBase):
         file_.write(" Value list length: %d\n" % len(self._row_list))
         for row in self._row_list:
             for index, value in enumerate(row):
-                file_.write(" %30s: %s\n" % (self._attribute_name_list[index], value))
+                file_.write(
+                    " %30s: %s\n" % (self._attribute_name_list[index], value)
+                )
 
     def __format_pdbx(self, inp):
         """Format input data following PDBx quoting rules."""
@@ -666,14 +679,18 @@ class DataCategory(DataCategoryBase):
                         # possible.
                         if not self.__double_quote_re.search(
                             inp
-                        ) and not self.__whitespace_single_quote_re.search(inp):
+                        ) and not self.__whitespace_single_quote_re.search(
+                            inp
+                        ):
                             return (
                                 self.__double_quoted_list(inp),
                                 "DT_DOUBLE_QUOTED_STRING",
                             )
                         elif not self.__single_quote_re.search(
                             inp
-                        ) and not self.__whitespace_double_quote_re.search(inp):
+                        ) and not self.__whitespace_double_quote_re.search(
+                            inp
+                        ):
                             return (
                                 self.__single_quoted_list(inp),
                                 "DT_SINGLE_QUOTED_STRING",
@@ -778,7 +795,9 @@ class DataCategory(DataCategoryBase):
         if isinstance(attribute, str) and isinstance(index, int):
             try:
                 list_, _ = self.__format_pdbx(
-                    self._row_list[index][self._attribute_name_list.index(attribute)]
+                    self._row_list[index][
+                        self._attribute_name_list.index(attribute)
+                    ]
                 )
                 return "".join(list_)
             except IndexError:
@@ -791,7 +810,9 @@ class DataCategory(DataCategoryBase):
 
     def get_value_formatted_by_index(self, attribute_index, row_index):
         """Get value formatted by index."""
-        list_, _ = self.__format_pdbx(self._row_list[row_index][attribute_index])
+        list_, _ = self.__format_pdbx(
+            self._row_list[row_index][attribute_index]
+        )
         return "".join(list_)
 
     def get_max_attribute_list_length(self, steps=1):
@@ -805,7 +826,9 @@ class DataCategory(DataCategoryBase):
     def get_format_type_list(self, steps=1):
         """Get a formatted type list."""
         try:
-            current_data_type_list = ["DT_NULL_VALUE"] * len(self._attribute_name_list)
+            current_data_type_list = ["DT_NULL_VALUE"] * len(
+                self._attribute_name_list
+            )
             for row in self._row_list[::steps]:
                 for index, value in enumerate(self._attribute_name_list):
                     data_type = self.__data_type_pdbx(value)
@@ -813,12 +836,16 @@ class DataCategory(DataCategoryBase):
                     current_type = current_data_type_list[index]
                     current_index = self.__data_type_list.index(current_type)
                     current_index = max(current_index, data_index)
-                    current_data_type_list[index] = self.__data_type_list[current_index]
+                    current_data_type_list[index] = self.__data_type_list[
+                        current_index
+                    ]
             # Map the format types to the data types
             current_format_type_list = []
             for data_type in current_data_type_list:
                 index = self.__data_type_list.index(data_type)
-                current_format_type_list.append(self.__format_type_list[index])
+                current_format_type_list.append(
+                    self.__format_type_list[index]
+                )
         except IndexError:
             self.__lfh.write(
                 "PdbxDataCategory(get_format_type_list) ++Index error at "
@@ -829,7 +856,9 @@ class DataCategory(DataCategoryBase):
     @property
     def get_format_type_list_x(self):
         """Alternate version of format type list."""
-        current_data_type_list = ["DT_NULL_VALUE"] * len(self._attribute_name_list)
+        current_data_type_list = ["DT_NULL_VALUE"] * len(
+            self._attribute_name_list
+        )
         for _ in self._row_list:
             for index, value in enumerate(self._attribute_name_list):
                 data_type = self.__data_type_pdbx(value)
@@ -837,7 +866,9 @@ class DataCategory(DataCategoryBase):
                 current_type = current_data_type_list[index]
                 current_index = self.__data_type_list.index(current_type)
                 current_index = max(current_index, data_index)
-                current_data_type_list[index] = self.__data_type_list[current_index]
+                current_data_type_list[index] = self.__data_type_list[
+                    current_index
+                ]
         # Map the format types to the data types
         current_format_type_list = []
         for data_type in current_data_type_list:

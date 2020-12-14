@@ -137,7 +137,9 @@ class PdbxReader:
                     try:
                         current_container.append(current_category)
                     except AttributeError:
-                        self.__syntax_error("Category cannot be added to data_ block")
+                        self.__syntax_error(
+                            "Category cannot be added to data_ block"
+                        )
                         return
                     current_row = []
                     current_category.append(current_row)
@@ -152,12 +154,16 @@ class PdbxReader:
                         return
                 # Check for duplicate attributes and add attribute to table.
                 if current_attribute_name in current_category.attribute_list:
-                    self.__syntax_error("Duplicate attribute encountered in category")
+                    self.__syntax_error(
+                        "Duplicate attribute encountered in category"
+                    )
                     return
                 else:
                     current_category.append_attribute(current_attribute_name)
                 # Get the data for this attribute from the next token
-                tok_category, _, current_quoted_string, current_word = next(tokenizer)
+                tok_category, _, current_quoted_string, current_word = next(
+                    tokenizer
+                )
                 if tok_category is not None or (
                     current_quoted_string is None and current_word is None
                 ):
@@ -203,19 +209,26 @@ class PdbxReader:
                     current_quoted_string,
                     current_word,
                 ) = next(tokenizer)
-                if (current_category_name is None) or (current_attribute_name is None):
-                    self.__syntax_error("Unexpected token in loop_ declaration")
+                if (current_category_name is None) or (
+                    current_attribute_name is None
+                ):
+                    self.__syntax_error(
+                        "Unexpected token in loop_ declaration"
+                    )
                     return
                 # Check for a previous category declaration.
                 if current_category_name in category_index:
-                    self.__syntax_error("Duplicate category declaration in loop_")
+                    self.__syntax_error(
+                        "Duplicate category declaration in loop_"
+                    )
                     return
                 current_category = DataCategory(current_category_name)
                 try:
                     current_container.append(current_category)
                 except AttributeError:
                     self.__syntax_error(
-                        "loop_ declaration outside of data_ block or save_ " "frame"
+                        "loop_ declaration outside of data_ block or save_ "
+                        "frame"
                     )
                     return
                 current_category.append_attribute(current_attribute_name)
@@ -307,7 +320,9 @@ class PdbxReader:
                 category_index = {}
                 current_category = None
             elif state == "ST_UNKNOWN":
-                self.__syntax_error("Unrecognized syntax element: " + str(current_word))
+                self.__syntax_error(
+                    "Unrecognized syntax element: " + str(current_word)
+                )
                 return
             else:
                 assert False, f"unhandled state {state}"
