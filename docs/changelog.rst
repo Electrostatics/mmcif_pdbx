@@ -28,7 +28,7 @@ Changes
 
 * Flattened namespace.
   *This should have triggered a 1.2.0 release but the versioning wasn't updated correctly.*
-  (`#32 <https://github.com/Electrostatics/mmcif_pdbx/pull/36>`_)
+  (`#32 <https://github.com/Electrostatics/mmcif_pdbx/pull/32>`_)
 
 v1.1.1 (11-Jul-2020)
 ====================
