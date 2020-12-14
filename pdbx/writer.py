@@ -140,9 +140,7 @@ class PdbxWriter:
         else:
             num_steps = 1
         format_type_list, _ = category.get_format_type_list(steps=num_steps)
-        max_length_list = category.get_max_attribute_list_length(
-            steps=num_steps
-        )
+        max_length_list = category.get_max_attribute_list_length(steps=num_steps)
         spacing = " " * self.__spacing
         for irow in range(category.row_count):
             line_list = []
