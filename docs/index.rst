@@ -67,3 +67,4 @@ Contents
    :maxdepth: 3
 
    api
+   changelog

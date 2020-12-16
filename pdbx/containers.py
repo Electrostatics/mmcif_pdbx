@@ -843,7 +843,9 @@ class DataCategory(DataCategoryBase):
             current_format_type_list = []
             for data_type in current_data_type_list:
                 index = self.__data_type_list.index(data_type)
-                current_format_type_list.append(self.__format_type_list[index])
+                current_format_type_list.append(
+                    self.__format_type_list[index]
+                )
         except IndexError:
             self.__lfh.write(
                 "PdbxDataCategory(get_format_type_list) ++Index error at "

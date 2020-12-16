@@ -104,7 +104,10 @@ class PdbxWriter:
                 attribute_name_max_length, len(attribute_name)
             )
         item_name_max_length = (
-            self.__spacing + len(category.name) + attribute_name_max_length + 2
+            self.__spacing
+            + len(category.name)
+            + attribute_name_max_length
+            + 2
         )
         line_list = []
         line_list.append("#\n")
