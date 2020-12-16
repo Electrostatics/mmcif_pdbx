@@ -2,11 +2,12 @@
 Change log
 ==========
 
-Unreleased
-==========
+v2.0.0 (15-Dec-2020)
+====================
 
 * Added a change log.
   (`#42 <https://github.com/Electrostatics/mmcif_pdbx/issues/42>`_)
+* Fix PyPI release.
 
 v1.1.2 (01-Aug-2020)
 ====================
