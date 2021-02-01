@@ -1,3 +1,5 @@
+.. _changelog-label:
+
 ==========
 Change log
 ==========

@@ -11,15 +11,18 @@
 ##
 """PDBx/mmCIF dictionary and data file parser.
 
-Acknowledgements:
+.. note::
 
-The tokenizer used in this module is modeled after the clever parser design
-used in the PyMMLIB package.
+   Acknowledgements:
 
-PyMMLib Development Group
-Authors: Ethan Merritt: merritt@u.washington.edu
-         Jay Painter: jay.painter@gmail.com
-See: http://pymmlib.sourceforge.net/
+   The tokenizer used in this module is modeled after the clever parser
+   design used in the PyMMLIB package.
+
+   PyMMLib Development Group:
+
+   Authors: Ethan Merritt: merritt@u.washington.edu, Jay Painter: jay.painter@gmail.com
+
+   See: http://pymmlib.sourceforge.net/
 """
 import re
 from .containers import DataCategory, DefinitionContainer, DataContainer
@@ -30,7 +33,10 @@ class PdbxReader:
     """PDBx reader for data files and dictionaries."""
 
     def __init__(self, input_file):
-        """Initialize with input file handle; e.g. as returned by open()."""
+        """Initialize.
+
+        :param file input_file: input file handle; e.g. as returned by open().
+        """
         self.__current_line_number = 0
         self.__input_file = input_file
         self.__state_dict = {
@@ -42,7 +48,10 @@ class PdbxReader:
         }
 
     def read(self, container_list):
-        """Appends to the input list of definition and data containers."""
+        """Appends to the input list of definition and data containers.
+
+        :param list container_list:  list of :class:`~pdbx.containers.ContainerBase` containers to append to.
+        """
         self.__current_line_number = 0
         try:
             self.__parser(self.__tokenizer(self.__input_file), container_list)
@@ -50,21 +59,31 @@ class PdbxReader:
             self.__syntax_error("Unexpected end of file")
 
     def __syntax_error(self, error_text):
-        """Raise a PdbxSyntaxError."""
+        """Raise a PdbxSyntaxError.
+
+        :param str error_text:  text for exception message
+        :raises pdbx.errors.PdbxSyntaxError:  exception with error text
+        """
         raise PdbxSyntaxError(self.__current_line_number, error_text)
 
     @staticmethod
-    def __get_container_name(in_word):
-        """Returns the name of the data_ or save_ container."""
+    def __get_container_name(in_word) -> str:
+        """Returns the name of the data_ or save_ container.
+
+        :param str in_word:  input word
+        """
         return str(in_word[5:]).strip()
 
-    def __get_state(self, in_word):
+    def __get_state(self, in_word) -> tuple:
         """Identifies reserved syntax elements and assigns an associated state.
 
-        Returns: (reserved word, state) where:
-            reserved word - is one of CIF syntax elements:
-                            data_, loop_, global_, save_, stop_
-            state - the parser state required to process this next section.
+        :param str in_word:  input word
+        :returns: (reserved word, state) where:
+
+          * reserved word - is one of CIF syntax elements: data_, loop_,
+          global_, save_, stop_
+
+          * state - the parser state required to process this next section.
         """
         i = in_word.find("_")
         if i == -1:
@@ -78,14 +97,12 @@ class PdbxReader:
     def __parser(self, tokenizer, container_list):
         """ Parser for PDBx data files and dictionaries.
 
-            Args:
-                tokenizer: reentrant method recognizing data item names
-                    (_category.attribute), quoted strings (single, double and
-                    multi-line semi-colon delimited), and unquoted strings.
-                container_list: list-type container for data and definition
-                    objects parsed from from the input file.
-            Returns:
-                container_list - is appended with data and definition objects
+            :param tokenizer: reentrant method recognizing data item names
+              (_category.attribute), quoted strings (single, double and
+              multi-line semi-colon delimited), and unquoted strings.
+            :param list container_list: list-type container for data and
+              definition objects parsed from from the input file.
+              container_list is appended with data and definition objects.
         """
         # Working container - data or definition
         current_container = None
@@ -346,6 +363,9 @@ class PdbxReader:
             or white space)
         Differentiated the regular expression to the better handle embedded
         quotes.
+
+        :param file input_file:  file object ready for reading
+        :rtype: Iterator[tuple]
         """
         # Regex definition for mmCIF syntax - semi-colon delimited strings are
         # handled outside of this regex.
@@ -412,6 +432,9 @@ class PdbxReader:
         token in the form of a tuple with the following structure:
             (category name, attribute name, quoted strings, words w/o quotes
             or white space)
+
+        :param file input_file:  file object ready for reading
+        :rtype: Iterator[tuple]
         """
         # Regex definition for mmCIF syntax - semi-colon delimited strings are
         # handled outside of this regex.
