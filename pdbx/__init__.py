@@ -1,6 +1,6 @@
 """PDBx/mmCIF Python dictionary resources.
 
-All of the code in this repository is originall based on
+All of the code in this repository is original based on
 http://mmcif.wwpdb.org/. Specifically, this code is directly derived from
 the `pdbx code <http://mmcif.wwpdb.org/docs/sw-examples/python/src/pdbx.tar.gz>`_ linked from
 `PDBx Python Parser Examples and Tutorial <http://mmcif.wwpdb.org/docs/sw-examples/python/html/>`_.
