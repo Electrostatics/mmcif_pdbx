@@ -4,6 +4,11 @@
 Change log
 ==========
 
+Current version
+===============
+
+* Add more detail to documentation. (`#34 <https://github.com/Electrostatics/mmcif_pdbx/issues/34>`_)
+
 v2.0.0 (15-Dec-2020)
 ====================
 
