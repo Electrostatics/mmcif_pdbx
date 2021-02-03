@@ -2,11 +2,11 @@
 
 
 class PdbxError(Exception):
-    """Class for catching general errors."""
+    """Class for general errors."""
 
 
 class PdbxSyntaxError(Exception):
-    """Class for catching syntax errors."""
+    """Class for syntax errors."""
 
     def __init__(self, line_number, text):
         super().__init__(self)

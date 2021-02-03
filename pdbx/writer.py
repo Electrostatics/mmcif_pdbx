@@ -29,6 +29,10 @@ class PdbxWriter:
     """
 
     def __init__(self, output_file=stdout):
+        """Initialize.
+
+        :param file output_file:  file object ready for writing
+        """
         self.__output_file = output_file
         self.__container_list = []
         self.__maximum_line_length = MAXIMUM_LINE_LENGTH
@@ -40,17 +44,28 @@ class PdbxWriter:
         self.__row_partition = None
 
     def set_row_partition(self, num_rows):
-        """Maximum number of rows checked for value length and format."""
+        """Maximum number of rows checked for value length and format.
+
+        :param int num_rows:  maximum number of rows
+        """
         self.__row_partition = num_rows
 
     def write(self, container_list):
-        """Write out a list of containers."""
+        """Write out a list of containers.
+
+        :param list container_list:  list of
+          :class:`~pdbx.containers.ContainerBase` objects to write.
+        """
         self.__container_list = container_list
         for container in self.__container_list:
             self.write_container(container)
 
     def write_container(self, container):
-        """Write out information for an individual container."""
+        """Write out information for an individual container.
+
+        :param container:  container to write
+        :type container:  :class:`~pdbx.containers.ContainerBase` 
+        """
         indent_string = " " * self.__indent_definition
         if isinstance(container, DefinitionContainer):
             self.__write("save_%s\n" % container.name)
@@ -92,11 +107,18 @@ class PdbxWriter:
         self.__write("#\n")
 
     def __write(self, string_):
-        """Write a string."""
+        """Write a string.
+
+        :param str string_:  string to write
+        """
         self.__output_file.write(string_)
 
     def __write_item_value_format(self, category):
-        """Write items and values for the given category."""
+        """Write items and values for the given category.
+
+        :param category:  category to write
+        :type category:  :class:`~pdbx.containers.DataCategory` 
+        """
         # Compute the maximum item name length within this category -
         attribute_name_max_length = 0
         for attribute_name in category.attribute_list:
@@ -122,7 +144,11 @@ class PdbxWriter:
         self.__write("".join(line_list))
 
     def __write_table_format(self, category):
-        """Write table format data."""
+        """Write table format data.
+
+        :param category:  category to write
+        :type category:  :class:`~pdbx.containers.DataCategory` 
+        """
         # Write the declaration of the loop_
         line_list = []
         line_list.append("#\n")

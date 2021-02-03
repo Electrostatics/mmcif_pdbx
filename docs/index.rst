@@ -7,17 +7,13 @@
 mmcif_pdbx
 ==========
 
-:Release: |release|
-:Date: |today|
-
-
 This is yet another PyPI package for http://mmcif.wwpdb.org/pdbx-mmcif-home-page.html.
 It emphasizes a simple and pure Python interface to basic mmCIF functionality.
 
 The canonical mmCIF Python package can be found at https://github.com/rcsb/py-mmcif.  It is full-featured and includes C/C++ code to accelerate I/O functions.  
 
 This package provides the module :mod:`pdbx`.
-More information about the :mod:`pdbx` module can be found in the :doc:`api`. section.
+More information about the :mod:`pdbx` module can be found in the :ref:`api-label` section.
 
 -----------------------
 Origin of this software
@@ -57,14 +53,13 @@ Indices and tables
 
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`
 
 --------
 Contents
 --------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
-   api
+   api/index
    changelog

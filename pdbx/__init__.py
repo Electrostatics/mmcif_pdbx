@@ -1,15 +1,18 @@
 """PDBx/mmCIF Python dictionary resources.
 
-All of the code in this repository is based on http://mmcif.wwpdb.org/.
-Specifically, this code is directly derived from
-http://mmcif.wwpdb.org/docs/sw-examples/python/src/pdbx.tar.gz linked from
-http://mmcif.wwpdb.org/docs/sw-examples/python/html/.
+All of the code in this repository is original based on
+http://mmcif.wwpdb.org/. Specifically, this code is directly derived from
+the `pdbx code <http://mmcif.wwpdb.org/docs/sw-examples/python/src/pdbx.tar.gz>`_ linked from
+`PDBx Python Parser Examples and Tutorial <http://mmcif.wwpdb.org/docs/sw-examples/python/html/>`_.
 
-See http://mmcif.wwpdb.org/docs/sw-examples/python/html/ for more information
+See `PDBx Python Parser Examples and Tutorial <http://mmcif.wwpdb.org/docs/sw-examples/python/html/>`_ for more information
 about this package, including examples.
 """
 
 # import pdbx.reader
+import io
+from .reader import PdbxReader
+from .writer import PdbxWriter
 from .errors import PdbxSyntaxError, PdbxError  # noqa: F401
 from .containers import DataCategory, DataContainer  # noqa: F401
 from ._version import get_versions
@@ -19,32 +22,40 @@ del get_versions
 
 
 def load(fp) -> list:
-    """Parse a CIF file into a list of DataContainer objects"""
-    from .reader import PdbxReader
+    """Parse a CIF file.
 
+    :param file fp:  file object ready for reading
+    :returns:  a list of :class:`~pdbx.containers.DataContainer` objects
+    """
     data = []
     PdbxReader(fp).read(data)
     return data
 
 
-def loads(s: str) -> list:
-    """Parse a CIF string into a list of DataContainer objects"""
-    import io
+def loads(s) -> list:
+    """Parse a CIF string.
 
+    :param str s:  string with CIF data
+    :returns: a list of :class:`~pdbx.containers.DataContainer` objects
+    """
     return load(io.StringIO(s))
 
 
-def dump(datacontainers: list, fp):
-    """Write a list of DataContainer objects to a CIF file"""
-    from .writer import PdbxWriter
+def dump(datacontainers, fp):
+    """Write a list of objects to a CIF file.
 
+    :param list datacontainers:  a list of :class:`~pdbx.containers.DataContainer` objects
+    :param file fp:  a file object ready for writing
+    """
     PdbxWriter(fp).write(datacontainers)
 
 
-def dumps(datacontainers: list) -> str:
-    """Serialize a list of DataContainer objects to a CIF formatted string"""
-    import io
+def dumps(datacontainers) -> str:
+    """Serialize a list of objects to a CIF-formatted string.
 
+    :param list datacontainers:  list of :class:`~pdbx.containers.DataContainer` objects
+    :returns:  CIF-formatted string
+    """
     fp = io.StringIO()
     dump(datacontainers, fp)
     return fp.getvalue()

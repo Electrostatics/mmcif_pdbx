@@ -29,6 +29,8 @@ def test_data_file(input_cif):
         reader = PdbxReader(input_file)
         data_list = []
         reader.read(data_list)
+        for item in data_list:
+            print(item.get_object("atom_site").print_it())
 
 
 @pytest.mark.parametrize("input_cif", ["1kip-sf.cif"], ids=str)
