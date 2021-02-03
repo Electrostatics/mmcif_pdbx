@@ -176,20 +176,20 @@ class ContainerBase:
     def print_it(self, fh=stdout, type_="brief"):
         """Dump information about container to specified file object.
 
-        :param file file_:  file object for writing
+        :param file fh:  file object for writing
         :param str type_:  type of summary ("brief" makes it short)
         """
-        file_.write(
+        fh.write(
             "+ %s container: %30s contains %4d categories\n"
             % (self.get_type(), self.name, len(self.__object_name_list))
         )
         for name in self.__object_name_list:
-            file_.write("--------------------------------------------\n")
-            file_.write("Data category: %s\n" % name)
+            fh.write("--------------------------------------------\n")
+            fh.write("Data category: %s\n" % name)
             if type_ == "brief":
-                self.__object_catalog[name].print_it(file_)
+                self.__object_catalog[name].print_it(fh)
             else:
-                self.__object_catalog[name].dump_it(file_)
+                self.__object_catalog[name].dump_it(fh)
 
     def rename(self, current_name, new_name) -> bool:
         """Change the name of an object in place.
