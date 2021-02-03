@@ -173,7 +173,7 @@ class ContainerBase:
         if (obj.name is not None) and (obj.name in self.__object_catalog):
             self.__object_catalog[obj.name] = obj
 
-    def print_it(self, file_=stdout, type_="brief"):
+    def print_it(self, fh=stdout, type_="brief"):
         """Dump information about container to specified file object.
 
         :param file file_:  file object for writing
