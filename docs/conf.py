@@ -12,11 +12,11 @@
 
 import os
 import sys
-from pdbx import config
 
 # import sphinx_rtd_theme
 
 sys.path.insert(0, os.path.abspath("../"))
+from pdbx import config
 
 
 # -- Project information -----------------------------------------------------
