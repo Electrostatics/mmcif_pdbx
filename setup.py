@@ -8,6 +8,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name="mmcif_pdbx",
     version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     author="John Westbrook",
     author_email="jwest@rcsb.rutgers.edu",
     maintainer="Nathan Baker",
@@ -26,6 +27,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Topic :: Scientific/Engineering :: Chemistry",
     ],
