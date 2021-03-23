@@ -16,13 +16,14 @@ import sys
 # import sphinx_rtd_theme
 
 sys.path.insert(0, os.path.abspath("../"))
+from pdbx import config
 
 
 # -- Project information -----------------------------------------------------
 
 project = "mmcif_pdbx"
 author = "John Westbrook"
-release = "1.1.1"
+release = config.VERSION
 
 # -- General configuration ---------------------------------------------------
 
