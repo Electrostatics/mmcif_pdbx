@@ -14,3 +14,4 @@ def test_version():
     assert re.match(
         r"[0-9]+\.[0-9]+", config.VERSION
     ) or config.VERSION.startswith("0+untagged")
+    assert __version__ == config.VERSION
