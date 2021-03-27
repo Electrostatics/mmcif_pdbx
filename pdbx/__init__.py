@@ -17,7 +17,7 @@ from .writer import PdbxWriter
 from .errors import PdbxSyntaxError, PdbxError  # noqa: F401
 from .containers import DataCategory, DataContainer  # noqa: F401
 
-__version__ = metadata.version("mmcif_pdbx")
+__version__ = metadata.version("mmcif-pdbx")
 
 
 def load(fp) -> list:
