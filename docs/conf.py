@@ -10,20 +10,13 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-import os
-import sys
-
-# import sphinx_rtd_theme
-
-sys.path.insert(0, os.path.abspath("../"))
-from pdbx import config
-
+from importlib import metadata
 
 # -- Project information -----------------------------------------------------
 
 project = "mmcif_pdbx"
 author = "John Westbrook"
-release = config.VERSION
+release = metadata.version("pdbx")
 
 # -- General configuration ---------------------------------------------------
 
