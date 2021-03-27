@@ -1,14 +1,13 @@
 """Python packaging for PDBx/mmCIF utilities."""
 import setuptools
-import versioneer
+from importlib import metadata
 
 with open("README.md", "r") as fh:
     LONG_DESCRIPTION = fh.read()
 
 setuptools.setup(
     name="mmcif_pdbx",
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+    version="2.0.1",
     author="John Westbrook",
     author_email="jwest@rcsb.rutgers.edu",
     maintainer="Nathan Baker",

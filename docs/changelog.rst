@@ -7,6 +7,9 @@ Change log
 Current version
 ===============
 
+* Removed versioneer
+* Added testing for Python 3.9
+* Fixed versioning numbers in code and documentation
 * Add more detail to documentation. (`#34 <https://github.com/Electrostatics/mmcif_pdbx/issues/34>`_)
 
 v2.0.0 (15-Dec-2020)

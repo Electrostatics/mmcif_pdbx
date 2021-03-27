@@ -16,7 +16,7 @@ from importlib import metadata
 
 project = "mmcif_pdbx"
 author = "John Westbrook"
-release = metadata.version("pdbx")
+release = metadata.version("mmcif_pdbx")
 
 # -- General configuration ---------------------------------------------------
 
