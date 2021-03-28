@@ -4,7 +4,7 @@ import setuptools
 # NOTE: The following reads the version number and makes
 #       if available to the packaging tools before installation.
 #       REF: https://stackoverflow.com/questions/458550/standard-way-to-embed-version-into-python-package  # noqa: E501
-with open("pdbx/version.py") as fobj:
+with open("pdbx/_version.py") as fobj:
     exec(fobj.read())
 
 

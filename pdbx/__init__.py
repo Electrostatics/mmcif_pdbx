@@ -18,7 +18,7 @@ from .reader import PdbxReader
 from .writer import PdbxWriter
 from .errors import PdbxSyntaxError, PdbxError  # noqa: F401
 from .containers import DataCategory, DataContainer  # noqa: F401
-from .version import __version__  # noqa: F401
+from ._version import __version__  # noqa: F401
 
 
 def load(fobj) -> list:
