@@ -95,14 +95,14 @@ class PdbxReader:
             return None, "ST_UNKNOWN"
 
     def __parser(self, tokenizer, container_list):
-        """ Parser for PDBx data files and dictionaries.
+        """Parser for PDBx data files and dictionaries.
 
-            :param tokenizer: reentrant method recognizing data item names
-              (_category.attribute), quoted strings (single, double and
-              multi-line semi-colon delimited), and unquoted strings.
-            :param list container_list: list-type container for data and
-              definition objects parsed from from the input file.
-              container_list is appended with data and definition objects.
+        :param tokenizer: reentrant method recognizing data item names
+          (_category.attribute), quoted strings (single, double and
+          multi-line semi-colon delimited), and unquoted strings.
+        :param list container_list: list-type container for data and
+          definition objects parsed from from the input file.
+          container_list is appended with data and definition objects.
         """
         # Working container - data or definition
         current_container = None

@@ -173,23 +173,23 @@ class ContainerBase:
         if (obj.name is not None) and (obj.name in self.__object_catalog):
             self.__object_catalog[obj.name] = obj
 
-    def print_it(self, fh=stdout, type_="brief"):
+    def print_it(self, fobj=stdout, type_="brief"):
         """Dump information about container to specified file object.
 
-        :param file fh:  file object for writing
+        :param file fobj:  file object for writing
         :param str type_:  type of summary ("brief" makes it short)
         """
-        fh.write(
+        fobj.write(
             "+ %s container: %30s contains %4d categories\n"
             % (self.get_type(), self.name, len(self.__object_name_list))
         )
         for name in self.__object_name_list:
-            fh.write("--------------------------------------------\n")
-            fh.write("Data category: %s\n" % name)
+            fobj.write("--------------------------------------------\n")
+            fobj.write("Data category: %s\n" % name)
             if type_ == "brief":
-                self.__object_catalog[name].print_it(fh)
+                self.__object_catalog[name].print_it(fobj)
             else:
-                self.__object_catalog[name].dump_it(fh)
+                self.__object_catalog[name].dump_it(fobj)
 
     def rename(self, current_name, new_name) -> bool:
         """Change the name of an object in place.
@@ -748,9 +748,8 @@ class DataCategory(DataCategoryBase):
         return max_list
 
     def rename_attribute(
-            self,
-            current_attribute_name,
-            new_attribute_name) -> bool:
+        self, current_attribute_name, new_attribute_name
+    ) -> bool:
         """Change the name of an attribute in place.
 
         :param str current_attribute_name:  current attribute name
@@ -1040,9 +1039,7 @@ class DataCategory(DataCategoryBase):
             current_format_type_list = []
             for data_type in current_data_type_list:
                 index = self.__data_type_list.index(data_type)
-                current_format_type_list.append(
-                    self.__format_type_list[index]
-                )
+                current_format_type_list.append(self.__format_type_list[index])
         except IndexError:
             self.__lfh.write(
                 "PdbxDataCategory(get_format_type_list) ++Index error at "

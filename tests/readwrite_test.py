@@ -64,9 +64,7 @@ def test_init_write_read(tmp_path):
         reader.read(container_list)
     for container in container_list:
         for object_name in container.get_object_name_list():
-            name, attr_list, row_list = container.get_object(
-                object_name
-            ).get()
+            name, attr_list, row_list = container.get_object(object_name).get()
             _LOGGER.info("Recovered data category  %s\n", name)
             _LOGGER.info("Attribute list           %r\n", repr(attr_list))
             _LOGGER.info("Row list                 %r\n", repr(row_list))
