@@ -1,9 +1,10 @@
 """Python packaging for PDBx/mmCIF utilities."""
 import setuptools
-from importlib import metadata
+
 
 with open("README.md", "r") as fh:
     LONG_DESCRIPTION = fh.read()
+
 
 setuptools.setup(
     name="mmcif_pdbx",

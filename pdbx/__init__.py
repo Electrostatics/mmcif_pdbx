@@ -17,7 +17,11 @@ from .writer import PdbxWriter
 from .errors import PdbxSyntaxError, PdbxError  # noqa: F401
 from .containers import DataCategory, DataContainer  # noqa: F401
 
-__version__ = metadata.version("mmcif-pdbx")
+# Handle inconsistent package naming for packages with underscores
+try:
+    __version__ = metadata.version("mmcif-pdbx")
+except importlib.metadata.PackageNotFoundError:
+    __version__ = metadata.version("mmcif-pdbx")
 
 
 def load(fp) -> list:
