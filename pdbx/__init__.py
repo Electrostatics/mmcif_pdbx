@@ -21,7 +21,7 @@ from .containers import DataCategory, DataContainer  # noqa: F401
 try:
     __version__ = metadata.version("mmcif-pdbx")
 except metadata.PackageNotFoundError:
-    __version__ = metadata.version("mmcif-pdbx")
+    __version__ = metadata.version("mmcif_pdbx")
 
 
 def load(fp) -> list:

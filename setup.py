@@ -7,8 +7,8 @@ with open("README.md", "r") as fh:
 
 
 setuptools.setup(
-    name="mmcif_pdbx",
-    version="2.0.1",
+    name="mmcif-pdbx",
+    version="2.0.2",
     author="John Westbrook",
     author_email="jwest@rcsb.rutgers.edu",
     maintainer="Nathan Baker",
