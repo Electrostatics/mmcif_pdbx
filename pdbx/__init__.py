@@ -20,7 +20,7 @@ from .containers import DataCategory, DataContainer  # noqa: F401
 # Handle inconsistent package naming for packages with underscores
 try:
     __version__ = metadata.version("mmcif-pdbx")
-except importlib.metadata.PackageNotFoundError:
+except metadata.PackageNotFoundError:
     __version__ = metadata.version("mmcif-pdbx")
 
 
