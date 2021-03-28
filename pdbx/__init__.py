@@ -5,10 +5,10 @@ http://mmcif.wwpdb.org/. Specifically, this code is directly derived from the
 `pdbx code <http://mmcif.wwpdb.org/docs/sw-examples/python/src/pdbx.tar.gz>`_
 linked from
 `PDBx Python Parser Examples and Tutorial
- <http://mmcif.wwpdb.org/docs/sw-examples/python/html/>`_.
+<http://mmcif.wwpdb.org/docs/sw-examples/python/html/>`_.
 
 See `PDBx Python Parser Examples and Tutorial
- <http://mmcif.wwpdb.org/docs/sw-examples/python/html/>`_ for more information
+<http://mmcif.wwpdb.org/docs/sw-examples/python/html/>`_ for more information
 about this package, including examples.
 """
 
