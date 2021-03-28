@@ -1,11 +1,14 @@
 """PDBx/mmCIF Python dictionary resources.
 
 All of the code in this repository is original based on
-http://mmcif.wwpdb.org/. Specifically, this code is directly derived from
-the `pdbx code <http://mmcif.wwpdb.org/docs/sw-examples/python/src/pdbx.tar.gz>`_ linked from
-`PDBx Python Parser Examples and Tutorial <http://mmcif.wwpdb.org/docs/sw-examples/python/html/>`_.
+http://mmcif.wwpdb.org/. Specifically, this code is directly derived from the
+`pdbx code <http://mmcif.wwpdb.org/docs/sw-examples/python/src/pdbx.tar.gz>`_
+linked from
+`PDBx Python Parser Examples and Tutorial
+ <http://mmcif.wwpdb.org/docs/sw-examples/python/html/>`_.
 
-See `PDBx Python Parser Examples and Tutorial <http://mmcif.wwpdb.org/docs/sw-examples/python/html/>`_ for more information
+See `PDBx Python Parser Examples and Tutorial
+ <http://mmcif.wwpdb.org/docs/sw-examples/python/html/>`_ for more information
 about this package, including examples.
 """
 
@@ -17,11 +20,7 @@ from .writer import PdbxWriter
 from .errors import PdbxSyntaxError, PdbxError  # noqa: F401
 from .containers import DataCategory, DataContainer  # noqa: F401
 
-# Handle inconsistent package naming for packages with underscores
-try:
-    __version__ = metadata.version("mmcif-pdbx")
-except metadata.PackageNotFoundError:
-    __version__ = metadata.version("mmcif_pdbx")
+__version__ = metadata.version("mmcif-pdbx")
 
 
 def load(fp) -> list:
@@ -47,7 +46,7 @@ def loads(s) -> list:
 def dump(datacontainers, fp):
     """Write a list of objects to a CIF file.
 
-    :param list datacontainers:  a list of :class:`~pdbx.containers.DataContainer` objects
+    :param list datacontainers:  a list of :class:`~pdbx.containers.DataContainer` objects # noqa E501
     :param file fp:  a file object ready for writing
     """
     PdbxWriter(fp).write(datacontainers)
@@ -56,7 +55,7 @@ def dump(datacontainers, fp):
 def dumps(datacontainers) -> str:
     """Serialize a list of objects to a CIF-formatted string.
 
-    :param list datacontainers:  list of :class:`~pdbx.containers.DataContainer` objects
+    :param list datacontainers:  list of :class:`~pdbx.containers.DataContainer` objects # noqa E501
     :returns:  CIF-formatted string
     """
     fp = io.StringIO()
