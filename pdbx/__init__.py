@@ -14,13 +14,11 @@ about this package, including examples.
 
 # import pdbx.reader
 import io
-from importlib import metadata
 from .reader import PdbxReader
 from .writer import PdbxWriter
 from .errors import PdbxSyntaxError, PdbxError  # noqa: F401
 from .containers import DataCategory, DataContainer  # noqa: F401
-
-__version__ = metadata.version("mmcif-pdbx")
+from .version import __version__  # noqa: F401
 
 
 def load(fp) -> list:
