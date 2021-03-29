@@ -64,7 +64,7 @@ class PdbxWriter:
         """Write out information for an individual container.
 
         :param container:  container to write
-        :type container:  :class:`~pdbx.containers.ContainerBase` 
+        :type container:  :class:`~pdbx.containers.ContainerBase`
         """
         indent_string = " " * self.__indent_definition
         if isinstance(container, DefinitionContainer):
@@ -117,7 +117,7 @@ class PdbxWriter:
         """Write items and values for the given category.
 
         :param category:  category to write
-        :type category:  :class:`~pdbx.containers.DataCategory` 
+        :type category:  :class:`~pdbx.containers.DataCategory`
         """
         # Compute the maximum item name length within this category -
         attribute_name_max_length = 0
@@ -126,10 +126,7 @@ class PdbxWriter:
                 attribute_name_max_length, len(attribute_name)
             )
         item_name_max_length = (
-            self.__spacing
-            + len(category.name)
-            + attribute_name_max_length
-            + 2
+            self.__spacing + len(category.name) + attribute_name_max_length + 2
         )
         line_list = []
         line_list.append("#\n")
@@ -147,7 +144,7 @@ class PdbxWriter:
         """Write table format data.
 
         :param category:  category to write
-        :type category:  :class:`~pdbx.containers.DataCategory` 
+        :type category:  :class:`~pdbx.containers.DataCategory`
         """
         # Write the declaration of the loop_
         line_list = []

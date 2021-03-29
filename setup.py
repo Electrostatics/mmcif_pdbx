@@ -1,14 +1,20 @@
 """Python packaging for PDBx/mmCIF utilities."""
 import setuptools
-import versioneer
 
-with open("README.md", "r") as fh:
-    LONG_DESCRIPTION = fh.read()
+# NOTE: The following reads the version number and makes
+#       if available to the packaging tools before installation.
+#       REF: https://stackoverflow.com/questions/458550/standard-way-to-embed-version-into-python-package  # noqa: E501
+with open("pdbx/_version.py") as fobj:
+    exec(fobj.read())
+
+
+with open("README.md", "r") as fobj:
+    LONG_DESCRIPTION = fobj.read()
+
 
 setuptools.setup(
-    name="mmcif_pdbx",
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+    name="mmcif-pdbx",
+    version=__version__,  # noqa: F821
     author="John Westbrook",
     author_email="jwest@rcsb.rutgers.edu",
     maintainer="Nathan Baker",
