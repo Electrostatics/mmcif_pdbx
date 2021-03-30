@@ -47,6 +47,13 @@ The software can be tested with `pytest <https://docs.pytest.org/en/stable/>`_ b
 
 from the top-level directory.
 
+----------------
+More information
+----------------
+
+More information about this software can be found in `the documentation <https://mmcif-pdbx.readthedocs.io/>`_.
+Guidelines for community behavior are provided in the `code of conduct <https://github.com/Electrostatics/mmcif_pdbx/blob/master/CODE_OF_CONDUCT.md>`_ and information on contributing to the software is provided in our `contribution guide <https://github.com/Electrostatics/mmcif_pdbx/blob/master/CONTRIBUTING.md>`_.
+
 ------------------
 Indices and tables
 ------------------
