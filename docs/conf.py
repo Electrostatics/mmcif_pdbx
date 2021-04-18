@@ -10,13 +10,15 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
+import sys
+sys.path.append("..")
 import pdbx
 
 # -- Project information -----------------------------------------------------
 
 project = "mmcif_pdbx"
 author = "John Westbrook"
-release = pdbx.__version__
+version = release = pdbx.__version__
 
 # -- General configuration ---------------------------------------------------
 
