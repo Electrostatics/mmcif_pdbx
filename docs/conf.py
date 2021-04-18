@@ -18,7 +18,7 @@ import pdbx
 
 project = "mmcif_pdbx"
 author = "John Westbrook"
-version = pdbx.__version__
+version = release = pdbx.__version__
 
 # -- General configuration ---------------------------------------------------
 
