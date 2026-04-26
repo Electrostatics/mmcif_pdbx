@@ -4,6 +4,14 @@
 Change log
 ==========
 
+v2.0.2 (26-Apr-2026)
+====================
+
+Fixes
+-----
+
+* Upgraded pytest to > 9.0.2 to fix security vulnerability. (`#49 <https://github.com/Electrostatics/mmcif_pdbx/issues/61>`_)
+
 v2.0.1
 ======
 
