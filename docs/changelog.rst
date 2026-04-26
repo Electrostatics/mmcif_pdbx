@@ -4,6 +4,19 @@
 Change log
 ==========
 
+v2.1.0 (26-Apr-2026)
+====================
+
+Changes
+-------
+
+* Consolidated packaging metadata into :file:`pyproject.toml` (PEP 621).
+  Removed :file:`setup.py`, :file:`setup.cfg`, and :file:`requirements.txt`.
+  Test and docs dependencies are now declared as optional-dependency groups:
+  install with ``pip install -e .[test]`` or ``pip install -e .[docs]``.
+* Bumped ``sphinx_rtd_theme`` requirement from ``==0.5.0`` to ``>=1.0`` for
+  compatibility with modern Sphinx.
+
 v2.0.2 (26-Apr-2026)
 ====================
 
