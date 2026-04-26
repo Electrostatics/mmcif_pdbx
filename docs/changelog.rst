@@ -7,10 +7,20 @@ Change log
 v2.0.2 (26-Apr-2026)
 ====================
 
+Changes
+-------
+
+* Dropped support for Python 3.6–3.9 (all end-of-life). Now requires Python 3.10+.
+* Modernized GitHub Actions workflow: bumped ``actions/checkout``, ``actions/setup-python``,
+  and ``actions/upload-artifact`` to current major versions; switched Codecov upload to
+  ``codecov/codecov-action``; added pip caching; install package with ``pip install -e .``.
+* Removed ``[bdist_wheel] universal=1`` from :file:`setup.cfg` (Python 3-only package).
+
 Fixes
 -----
 
 * Upgraded pytest to > 9.0.2 to fix security vulnerability. (`#49 <https://github.com/Electrostatics/mmcif_pdbx/issues/61>`_)
+* Corrected coverage ``source`` in :file:`setup.cfg` from ``mmcif_pdbx`` to ``pdbx``.
 
 v2.0.1
 ======
