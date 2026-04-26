@@ -13,23 +13,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install black
-          pip install flake8
-          pip install pytest
-          pip install coverage
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          python -m pip install black flake8 pytest coverage
+          if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
+          python -m pip install -e .
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
@@ -40,16 +40,21 @@ jobs:
         run: |
           coverage run --source=pdbx -m pytest
           coverage report -m | tee coverage.txt
+          coverage xml
           coverage html
-      - name: Upload coverage to https://codecov.io/gh/Electrostatics/mmcif_pdbx
-        run: bash <(curl -s https://codecov.io/bash)
-      - name: Store coverage text results
-        uses: actions/upload-artifact@v2
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
         with:
-          name: coverage-text
+          files: coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+      - name: Store coverage text results
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-text-${{ matrix.python-version }}
           path: coverage.txt
       - name: Store coverage HTML results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: coverage-html
+          name: coverage-html-${{ matrix.python-version }}
           path: htmlcov/*
