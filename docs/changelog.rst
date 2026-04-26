@@ -16,13 +16,6 @@ Changes
   install with ``pip install -e .[test]`` or ``pip install -e .[docs]``.
 * Bumped ``sphinx_rtd_theme`` requirement from ``==0.5.0`` to ``>=1.0`` for
   compatibility with modern Sphinx.
-
-v2.0.2 (26-Apr-2026)
-====================
-
-Changes
--------
-
 * Dropped support for Python 3.6–3.9 (all end-of-life). Now requires Python 3.10+.
 * Modernized GitHub Actions workflow: bumped ``actions/checkout``, ``actions/setup-python``,
   and ``actions/upload-artifact`` to current major versions; switched Codecov upload to
