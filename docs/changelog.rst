@@ -4,6 +4,15 @@
 Change log
 ==========
 
+Unreleased
+==========
+
+Fixes
+-----
+
+* Restricted the test workflow token to read-only repository contents.
+  (`#66 <https://github.com/Electrostatics/mmcif_pdbx/issues/66>`_)
+
 v2.1.0 (26-Apr-2026)
 ====================
 
